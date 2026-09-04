@@ -128,18 +128,18 @@ export const caseStudies = {
     theme: 'soma',
     eyebrow: 'SomaCanvas · Interaction Design',
     title: 'What if your body was the brush?',
-    summary: 'A browser-based gesture drawing tool that turns imprecision into texture—and creating into play.',
+    summary: 'A browser-based gesture drawing tool that turns imprecision into texture, and creating into play.',
     heroGraphic: 'soma-canvas',
     meta: {
-      Role: 'Team Lead · UX Designer · Prototyping',
+      Role: 'Team Lead · UX Designer · Full Stack Developer',
       Team: 'Zima Blue · 3 people',
-      Timeline: 'Apr – Jun 2026',
-      Tools: 'MediaPipe · Figma · Claude Code',
+      Timeline: 'Apr – Aug 2026',
+      Tools: 'MediaPipe · Figma · Claude Code · Codex',
     },
     sections: [
       {
-        eyebrow: 'The premise',
-        title: 'Precision was the barrier—not creativity.',
+        eyebrow: 'Overview',
+        title: 'Precision was the barrier, not creativity.',
         paragraphs: [
           'Most digital art tools assume steady hands, complex toolbars, and pixel-level control. We asked whether natural hand movement could be enough to make something beautiful.',
           'Abstract output changed tracking noise from a defect into an aesthetic. A wobbly line was no longer a mistake; it was texture.',
@@ -151,10 +151,20 @@ export const caseStudies = {
         eyebrow: 'Interaction model',
         title: 'Your hand shape is the tool.',
         paragraphs: [
-          'SomaCanvas uses MediaPipe hand tracking in the browser. A pointing finger creates a fine jiggly line, an open palm makes a paint splash, and a closed fist becomes the resting state.',
+          'SomaCanvas uses MediaPipe hand tracking in the browser. Five gestures become a rest state, magnetic circles, liquid edits, twin-finger ribbons, and orbital constellations.',
           'The camera feed is the canvas, keeping the body spatially connected to the marks instead of splitting attention between a webcam preview and a blank drawing area.',
         ],
         visual: 'gesture-map',
+      },
+      {
+        eyebrow: 'Color system',
+        title: 'Color should invite play, not another decision.',
+        paragraphs: [
+          'We started with random colors so people could move straight into making. Choosing a palette up front felt like another test of taste—the opposite of the freedom and play we wanted SomaCanvas to create.',
+          'I later designed a mood check-in that sets the palette’s dominant color family when someone enters the site. The system makes the first choice; people who want more control can still open Settings and fine-tune it with a hidden color wheel.',
+        ],
+        visual: 'soma-palette',
+        callout: 'Default to freedom. Reveal precision only when someone asks for it.',
       },
       {
         eyebrow: 'Evaluation',
@@ -163,31 +173,24 @@ export const caseStudies = {
           'Seven participants completed three open-ended drawing trials with no tutorial. We measured whether they could learn the gestures and whether making art felt different afterward.',
           'All six participants who completed the comparison said later attempts improved. By the third trial, users described more direction, polish, and engagement.',
         ],
-        stats: [
-          ['+0.86', 'confidence'],
-          ['+0.57', 'comfort'],
-          ['−0.43', 'feeling limited'],
-        ],
         visual: 'confidence-chart',
-      },
-      {
-        eyebrow: 'What broke',
-        title: 'Feedback mattered more than precision.',
-        paragraphs: [
-          'Without a cursor, users could not connect their hand position to the output. We added a visible tracking point and clearer recognition states so people could distinguish their gesture from a system failure.',
-          'We also removed the eraser. It implied there were mistakes to fix, contradicting the project’s core philosophy. Undo stayed; perfectionism did not.',
-        ],
-        visual: 'feedback-loop',
-        bullets: ['Visible cursor position', 'Clear gesture-recognition state', 'Higher confidence thresholds', 'No eraser'],
+        followup: {
+          title: 'Feedback mattered more than precision.',
+          paragraphs: [
+            'The clearest usability issue was feedback, not precision. Without a cursor, users could not connect their hand position to the output, so we added a visible tracking point, clearer recognition states, and higher confidence thresholds.',
+            'We also removed the eraser. It implied there were mistakes to fix, contradicting the project’s core philosophy. Undo stayed; perfectionism did not.',
+          ],
+        },
       },
       {
         eyebrow: 'Next iteration',
         title: 'From playful demo to reflective practice.',
         paragraphs: [
-          'The next version explores mood-based color palettes, a drawing calendar, better onboarding, and broader testing with motor-impaired users, older adults, and children.',
+          'The next version explores a drawing calendar, better onboarding, and broader testing with motor-impaired users, older adults, and children.',
           'The early study suggests the abstract output model works. The next question is whether it works for the people most excluded by conventional drawing tools.',
         ],
         visual: 'mood-calendar',
+        hideVisual: true,
       },
     ],
   },
@@ -207,26 +210,21 @@ export const caseStudies = {
     },
     sections: [
       {
-        eyebrow: 'The tension',
-        title: 'Real products looked like ads.',
+        eyebrow: 'Overview',
+        title: 'A clearer hierarchy from browse to decision.',
         paragraphs: [
-          'Product carousels and membership banners used the same visual patterns people have learned to skip. Underneath, seventeen overlapping categories repeated across menus.',
-          'Nothing was technically broken. The page simply asked every element to compete for attention at once.',
+          'The redesign reorganized Costco Electronics around how shoppers browse, compare, and search. It reduced seventeen overlapping categories to twelve, clarified the information priority within product cards, and grouped search suggestions by intent.',
+          'Together, these changes create a more legible path from entering Electronics to choosing a product—fewer competing options, faster scanning, and clearer next actions.',
         ],
         visual: 'attention-map',
-        callout: 'The page did not look bad. It asked too much of the person reading it.',
+        callout: 'One consistent information hierarchy now connects category browsing, product comparison, and search.',
       },
       {
-        eyebrow: 'Information architecture',
+        eyebrow: 'Redesign',
         title: 'Cut 17 categories to 12.',
         paragraphs: [
           'We defined one label per concept and benchmarked the taxonomy against Sam’s Club. Duplicates, misplaced items, and categories too narrow to browse by came out.',
           'Hick’s Law framed the choice cost. Miller’s Law helped us turn twelve isolated decisions into one chunked visual group.',
-        ],
-        stats: [
-          ['17', 'categories before'],
-          ['12', 'categories after'],
-          ['1', 'controlled vocabulary'],
         ],
         visual: 'category-grid',
       },
@@ -248,13 +246,13 @@ export const caseStudies = {
         visual: 'search-groups',
       },
       {
-        eyebrow: 'Outcome',
-        title: 'A blueprint for the rest of the store.',
+        eyebrow: 'Measurable impact',
+        title: 'A framework for measuring redesign impact.',
         paragraphs: [
           'The redesigned Electronics section uses twelve categories, one navigation system, clearer product cards, and grouped search suggestions.',
-          'A future round should validate the taxonomy with Costco shoppers through card sorting and connect online browsing more directly to nearby warehouse inventory.',
+          'Because a full usability study has not yet been conducted, these proposed benchmarks define what a future comparative test with Costco shoppers should measure.',
         ],
-        visual: 'costco-blueprint',
+        visual: 'costco-impact',
       },
     ],
   },
