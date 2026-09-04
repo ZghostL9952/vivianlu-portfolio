@@ -760,6 +760,8 @@ const aboutBooks = {
   read: [
     { title: "Don't Make Me Think", author: 'Steve Krug' },
     { title: 'L\'Etranger', author: 'Author' },
+    {title: 'Educated', author: 'Tara Westover' },
+    {title: '我与地坛', author: '史铁生' },
   ],
 }
 
@@ -801,7 +803,7 @@ function AboutPage() {
             <AboutBookList books={aboutBooks.current} />
           </article>
           <article>
-            <h3>Read books</h3>
+            <h3>Favorite books</h3>
             <AboutBookList books={aboutBooks.read} />
           </article>
         </div>
@@ -1581,7 +1583,10 @@ function CostcoOutcomeFlow({ compact = false }) {
                   <div className="costco-prototype-product-copy">
                     <small>Electronics / Smart Watches</small>
                     <h3>Smart Watches</h3>
-                    <p>Use the search bar to look for <b>lens</b>.</p>
+                    <div className="costco-prototype-instruction" role="note" aria-label="Next prototype step">
+                      <span>Next step</span>
+                      <p>Type <b>lens</b> in the search bar, then press Enter or select the search icon.</p>
+                    </div>
                     <span className="costco-prototype-search-message" aria-live="polite">{searchMessage}</span>
                   </div>
                   <div className="costco-prototype-product-card">
@@ -1592,7 +1597,7 @@ function CostcoOutcomeFlow({ compact = false }) {
 
               {activeStage === 'search' && (
                 <div className="costco-prototype-search-view">
-                  <div className="costco-prototype-search-caption">
+                  <div className="costco-prototype-search-caption costco-prototype-result-note" role="note" aria-label="Search result takeaway">
                     <small>Search response</small>
                     <h3>Grouped results make “lens” easier to scan.</h3>
                   </div>

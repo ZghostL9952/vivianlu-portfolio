@@ -4008,6 +4008,52 @@
 
 .costco-prototype-product-copy p b { color: var(--case-accent); }
 
+.costco-prototype-instruction {
+  width: min(100%, 330px);
+  position: relative;
+  display: grid;
+  gap: 8px;
+  margin-top: 24px;
+  padding: 18px 22px 20px;
+  overflow: hidden;
+  color: #332d19;
+  background: #fff1a8;
+  box-shadow: 0 9px 18px rgba(66, 55, 13, .13);
+  clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%);
+  transform: rotate(-.65deg);
+}
+
+.costco-prototype-instruction::after {
+  content: '';
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #ddc96f;
+  clip-path: polygon(0 0, 0 100%, 100% 100%);
+}
+
+.costco-prototype-instruction > span {
+  color: #685b20;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .11em;
+}
+
+.costco-prototype-instruction p {
+  color: #332d19;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.costco-prototype-instruction p b {
+  color: #075f9f;
+  font-weight: 700;
+}
+
 .costco-prototype-search-message {
   min-height: 17px;
   display: block;
@@ -4047,6 +4093,36 @@
   line-height: 1.08;
 }
 
+.costco-prototype-result-note {
+  width: min(100%, 360px);
+  position: relative;
+  padding: 20px 23px 22px;
+  overflow: hidden;
+  color: #332d19;
+  background: #fff1a8;
+  box-shadow: 0 9px 18px rgba(66, 55, 13, .13);
+  clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%);
+  transform: rotate(.55deg);
+}
+
+.costco-prototype-result-note::after {
+  content: '';
+  width: 20px;
+  height: 20px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #ddc96f;
+  clip-path: polygon(0 0, 0 100%, 100% 100%);
+}
+
+.costco-prototype-result-note small { color: #685b20; }
+
+.costco-prototype-result-note h3 {
+  color: #332d19;
+  margin-bottom: 0;
+}
+
 .costco-prototype-search-view > img {
   width: 100%;
   max-height: 100%;
@@ -4079,7 +4155,7 @@
   }
   .costco-prototype-hero .costco-prototype { inset: auto; }
   .costco-prototype-hero .costco-prototype-browser {
-    height: 520px;
+    height: 600px;
     aspect-ratio: auto;
   }
   .costco-prototype-hero .costco-prototype.stage-category .costco-prototype-browser {
@@ -4116,10 +4192,23 @@
   }
   .costco-prototype-product-copy { padding-top: 0; }
   .costco-prototype-product-copy h3 { font-size: 27px; }
+  .costco-prototype-instruction {
+    width: 100%;
+    gap: 6px;
+    margin-top: 13px;
+    padding: 13px 16px 15px;
+    transform: none;
+  }
+  .costco-prototype-instruction p { font-size: 13px; }
   .costco-prototype-product-card { min-height: 330px; }
   .costco-prototype.is-compact .costco-prototype-product-card { min-height: 250px; }
   .costco-prototype-product-card img { height: 250px; }
   .costco-prototype-search-caption h3 { margin-bottom: 0; font-size: 22px; }
+  .costco-prototype-result-note {
+    width: 100%;
+    padding: 15px 18px 18px;
+    transform: none;
+  }
   .costco-prototype-search-view > img { max-height: 275px; }
 }
 
@@ -4135,16 +4224,18 @@
   background: transparent;
 }
 
-.graphic-costco-impact .case-graphic-stage { min-height: 660px; }
+.graphic-costco-impact .case-graphic-stage { min-height: 760px; }
 
 .costco-impact-chart {
+  width: min(100%, 860px);
   position: absolute;
-  inset: 0;
+  inset: 0 auto 0 50%;
   display: grid;
   grid-template-rows: auto auto auto auto;
   align-content: center;
-  gap: 18px;
+  gap: 22px;
   color: var(--case-ink);
+  transform: translateX(-50%);
 }
 
 .costco-impact-heading {
@@ -4181,7 +4272,7 @@
   justify-content: flex-end;
   gap: 7px 14px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .costco-impact-legend span {
@@ -4203,18 +4294,19 @@
 
 .costco-impact-list {
   display: grid;
-  border-top: 1px solid color-mix(in srgb, var(--case-ink) 10%, transparent);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
 }
 
 .costco-impact-list > button {
   min-width: 0;
   display: grid;
-  grid-template-columns: 155px minmax(260px, 1fr) 94px;
-  gap: 20px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px 18px;
   align-items: center;
-  padding: 13px 12px;
-  border: 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--case-ink) 10%, transparent);
+  padding: 18px;
+  border: 1px solid color-mix(in srgb, var(--case-ink) 13%, transparent);
+  border-radius: 10px;
   color: inherit;
   background: transparent;
   font: inherit;
@@ -4230,34 +4322,38 @@
   outline: none;
 }
 
-.costco-impact-list > button.active { transform: translateX(4px); }
+.costco-impact-list > button.active { transform: translateY(-3px); }
 
 .costco-impact-label {
   display: grid;
   gap: 3px;
   color: var(--case-ink);
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 600;
   line-height: 1.25;
 }
 
 .costco-impact-label small {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 400;
 }
 
-.costco-impact-bars { display: grid; gap: 6px; }
+.costco-impact-bars {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 9px;
+}
 
 .costco-impact-series {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 58px;
-  gap: 9px;
+  grid-template-columns: minmax(0, 1fr) 68px;
+  gap: 12px;
   align-items: center;
 }
 
 .costco-impact-track {
-  height: 10px;
+  height: 12px;
   display: block;
   overflow: hidden;
   background: color-mix(in srgb, var(--case-ink) 8%, transparent);
@@ -4275,35 +4371,37 @@
 
 .costco-impact-series strong {
   color: var(--case-ink);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   text-align: right;
   white-space: nowrap;
 }
 
 .costco-impact-delta {
+  grid-column: 2;
+  grid-row: 1;
   justify-self: end;
   padding: 7px 10px;
   border-radius: 999px;
   color: #176a49;
   background: #e4f3ec;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
 }
 
 .costco-impact-detail {
-  min-height: 76px;
+  min-height: 88px;
   display: grid;
-  grid-template-columns: 155px 1fr;
-  gap: 20px;
+  grid-template-columns: 175px 1fr;
+  gap: 24px;
   align-items: start;
   padding: 12px 10px 0;
 }
 
 .costco-impact-detail span {
   color: var(--case-accent);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .07em;
@@ -4312,7 +4410,7 @@
 .costco-impact-detail p {
   margin: 0;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.55;
 }
 
@@ -4321,7 +4419,7 @@
   padding-top: 13px;
   border-top: 1px solid color-mix(in srgb, var(--case-ink) 16%, transparent);
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   line-height: 1.5;
 }
 
@@ -4329,22 +4427,23 @@
 
 @media (max-width: 980px) {
   .section-costco-impact { grid-template-columns: 1fr; }
-  .graphic-costco-impact .case-graphic-stage { min-height: 680px; }
+  .graphic-costco-impact .case-graphic-stage { min-height: 760px; }
 }
 
 @media (max-width: 620px) {
-  .graphic-costco-impact .case-graphic-stage { min-height: 980px; }
+  .graphic-costco-impact .case-graphic-stage { min-height: 1120px; }
   .costco-impact-chart { align-content: start; gap: 15px; }
   .costco-impact-heading { align-items: flex-start; flex-direction: column; }
   .costco-impact-legend { justify-content: flex-start; }
+  .costco-impact-list { grid-template-columns: 1fr; gap: 10px; }
   .costco-impact-list > button {
     grid-template-columns: 1fr auto;
-    gap: 9px 14px;
-    padding: 13px 7px;
+    gap: 11px 14px;
+    padding: 15px;
   }
-  .costco-impact-label { font-size: 12px; }
+  .costco-impact-label { font-size: 15px; }
   .costco-impact-bars { grid-column: 1 / -1; }
-  .costco-impact-series { grid-template-columns: minmax(0, 1fr) 62px; }
+  .costco-impact-series { grid-template-columns: minmax(0, 1fr) 68px; }
   .costco-impact-delta { grid-column: 2; grid-row: 1; }
   .costco-impact-detail { grid-template-columns: 1fr; gap: 6px; padding-inline: 7px; }
 }
