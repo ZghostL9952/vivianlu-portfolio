@@ -759,7 +759,7 @@ const aboutBooks = {
   ],
   read: [
     { title: "Don't Make Me Think", author: 'Steve Krug' },
-    { title: 'L\'Etranger', author: 'Author' },
+    { title: 'L\'Etranger', author: 'Albert Camus' },
     {title: 'Educated', author: 'Tara Westover' },
     {title: '我与地坛', author: '史铁生' },
   ],
