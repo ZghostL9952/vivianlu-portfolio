@@ -305,6 +305,8 @@
   padding: clamp(30px, 3vw, 36px) 0 clamp(30px, 3vw, 36px);
 }
 
+.intro-primary { min-width: 0; }
+
 .secondary-page {
   min-height: calc(100svh - 96px);
   display: grid;
@@ -778,6 +780,13 @@
   }
   .art-gallery-track { animation: none; }
   .art-gallery-set[aria-hidden='true'] { display: none; }
+  .home-art-gallery {
+    overflow-x: auto;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .home-art-gallery-track { animation: none; }
+  .home-art-gallery-set[aria-hidden='true'] { display: none; }
 }
 
 .site-shell.is-visual-case .site-header {
@@ -840,6 +849,59 @@
 .tedx-draggable:active { cursor: grabbing; }
 .tedx-draggable:focus-visible { outline: 2px solid #16232c; outline-offset: 7px; }
 
+.tedx-hand-hint {
+  position: absolute;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #263843;
+  font: 700 clamp(17px, 1.7vw, 24px)/1 "Bradley Hand", "Comic Sans MS", cursive;
+  letter-spacing: .02em;
+  white-space: nowrap;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, .48));
+  animation: tedx-hint-arrive 420ms cubic-bezier(.2, .8, .2, 1) both;
+}
+
+.tedx-hand-hint > span { transform: rotate(-4deg); }
+
+.tedx-hand-hint > i {
+  width: 70px;
+  height: 2.5px;
+  position: relative;
+  display: block;
+  margin-top: 17px;
+  border-radius: 999px;
+  background: currentColor;
+  transform: rotate(-18deg);
+}
+
+.tedx-hand-hint > i::before,
+.tedx-hand-hint > i::after {
+  content: '';
+  width: 18px;
+  height: 2.5px;
+  position: absolute;
+  top: 0;
+  left: -2px;
+  border-radius: 999px;
+  background: currentColor;
+  transform-origin: 1px 50%;
+}
+
+.tedx-hand-hint > i::before { transform: rotate(-38deg); }
+.tedx-hand-hint > i::after { width: 16px; transform: rotate(40deg); }
+
+.tedx-hand-hint.is-drag-hint { top: -54px; right: -54px; }
+.tedx-hand-hint.is-brochure-hint { top: -58px; right: -76px; }
+.tedx-hand-hint.is-video-hint { top: -62px; right: -72px; }
+
+@keyframes tedx-hint-arrive {
+  from { opacity: 0; transform: translateY(-8px) rotate(-3deg); }
+  to { opacity: 1; transform: translateY(0) rotate(0); }
+}
+
 .tedx-object img { width: 100%; height: auto; display: block; pointer-events: none; }
 
 .tedx-artboard {
@@ -869,26 +931,77 @@
 .tedx-note {
   width: clamp(220px, 20vw, 310px);
   min-height: clamp(155px, 13vw, 200px);
+  position: absolute;
+  isolation: isolate;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 22px;
-  color: #152530;
-  background: #c5e6f6;
-  box-shadow: 0 20px 25px rgba(31, 35, 37, .25), 0 3px 4px rgba(31, 35, 37, .16);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, .38);
+  border-radius: 29px 38px 31px 35px;
+  color: #152b38;
+  background: transparent;
+  box-shadow:
+    inset 1px 1px 0 rgba(255, 255, 255, .64),
+    inset -1px -1px 0 rgba(65, 91, 102, .12),
+    0 22px 34px rgba(31, 35, 37, .22),
+    0 4px 8px rgba(31, 35, 37, .12);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 
+.tedx-note::before,
 .tedx-note::after {
   content: '';
   position: absolute;
-  right: 8%;
-  bottom: -7px;
-  left: 8%;
-  height: 12px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.tedx-note::before {
+  width: 76%;
+  height: 62%;
+  top: -31%;
+  left: -13%;
   border-radius: 50%;
-  background: rgba(32, 40, 45, .12);
-  filter: blur(7px);
-  z-index: -1;
+  background: radial-gradient(ellipse, rgba(255, 255, 255, .16), rgba(255, 255, 255, 0) 70%);
+  transform: rotate(-8deg);
+}
+
+.tedx-note::after {
+  inset: 5px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 24px 33px 26px 30px;
+  box-shadow: none;
+}
+
+.tedx-note > span,
+.tedx-note > strong { position: relative; z-index: 2; }
+
+.tedx-liquid-glass-surface,
+.tedx-liquid-glass-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.tedx-liquid-glass-surface {
+  z-index: 0;
+  overflow: hidden;
+}
+
+.tedx-liquid-glass-canvas {
+  display: block;
+  padding: 0;
+}
+
+.tedx-liquid-glass-canvas canvas {
+  display: block;
+  opacity: .98;
 }
 
 .tedx-note span {
@@ -1270,6 +1383,7 @@
 .intro-skill-pills li:hover { transform: translateY(-2px) rotate(0); }
 
 .intro-notes {
+  min-width: 0;
   align-self: end;
   margin-bottom: 44px;
   padding-left: 24px;
@@ -1277,6 +1391,67 @@
   color: var(--muted);
   font-size: 14px;
   line-height: 1.65;
+}
+
+.home-art-gallery {
+  width: 100%;
+  max-width: 340px;
+  margin: 0 0 24px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-inline: contain;
+  scrollbar-width: none;
+  touch-action: pan-y;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+
+.home-art-gallery::-webkit-scrollbar { display: none; }
+
+.home-art-gallery-track {
+  width: max-content;
+  display: flex;
+  animation: home-art-gallery-scroll 92s linear infinite;
+  will-change: transform;
+}
+
+.home-art-gallery:hover .home-art-gallery-track,
+.home-art-gallery:focus-within .home-art-gallery-track,
+.home-art-gallery.is-manual-scrolling .home-art-gallery-track { animation-play-state: paused; }
+
+.home-art-gallery-set {
+  display: flex;
+  flex: none;
+  gap: 8px;
+  padding-right: 8px;
+}
+
+.home-art-gallery-set button {
+  width: auto;
+  height: 86px;
+  display: block;
+  flex: none;
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  background: #eceae5;
+  cursor: zoom-in;
+}
+
+.home-art-gallery-set img {
+  width: auto;
+  height: 100%;
+  display: block;
+  transition: transform 300ms ease;
+}
+
+.home-art-gallery-set button:hover img,
+.home-art-gallery-set button:focus-visible img { transform: scale(1.06); }
+
+.home-art-gallery-set button:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: -3px;
 }
 
 .intro-notes p + p { margin-top: 8px; }
@@ -4241,6 +4416,11 @@ footer { padding: clamp(130px, 17vw, 220px) 0 36px; }
 @keyframes breathe {
   0%, 100% { box-shadow: 0 0 0 5px rgba(110, 142, 98, .12); }
   50% { box-shadow: 0 0 0 8px rgba(110, 142, 98, 0); }
+}
+
+@keyframes home-art-gallery-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
 }
 
 @media (min-width: 801px) {

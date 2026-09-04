@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.css'
 import { caseStudies, caseStudyOrder } from './caseStudies'
+import LiquidGlassContainer from './vendor/liquid-glass-container'
 
 const blockedCaseStudySlugs = new Set(['sportsexcitement'])
 
@@ -186,11 +187,11 @@ const visualProjects = [
 
 // Edit the artwork title and medium labels in this list.
 const artGallery = [
+  { src: '/art-gallery-05.jpg', title: '"The Boundary Between Insanity and Genius"', medium: 'Painted sculpture', alt: 'Sculpted portrait photographed against a vivid green background' },
   { src: '/art-gallery-01.jpg', title: 'Life Drawing', medium: 'Oil on canvas', alt: 'Figure painting with blue and warm ochre brushwork' },
   { src: '/art-gallery-02.jpg', title: 'Into the Hidden Danger', medium: 'Oil on canvas', alt: 'Surreal underwater room painting in deep blue and green' },
   { src: '/art-gallery-03.jpg', title: 'Busy Morning', medium: 'Pen & ink', alt: 'Detailed ink drawing of a waterfront mountain village' },
   { src: '/art-gallery-04.jpg', title: 'A Portal: A Chance to Redeem', medium: 'Acrylic on canvas', alt: 'Mixed-media painting with a kangaroo and burned canvas edges' },
-  { src: '/art-gallery-05.jpg', title: '"The Boundary Between Insanity and Genius"', medium: 'Painted sculpture', alt: 'Sculpted portrait photographed against a vivid green background' },
   { src: '/art-gallery-06.jpg', title: 'Anthropomorphic', medium: 'Multi-medium sculpture', alt: 'Wearable sculptural figure assembled with flowers, faces, and paper forms' },
   { src: '/art-gallery-07.jpg', title: 'Positive and Negative Space', medium: 'Ink', alt: 'Black-and-white botanical silhouette artwork' },
   { src: '/art-gallery-08.jpg', title: 'City Poster of My Hometown-TsingTao', medium: 'Digital Art', alt: 'Travel the World Tsingtao advertising artwork' },
@@ -280,6 +281,115 @@ function ArtGalleryRail({ onSelect }) {
   )
 }
 
+function HomeArtGallery() {
+  const [activeArtwork, setActiveArtwork] = useState(null)
+  const railRef = useRef(null)
+
+  useEffect(() => {
+    const rail = railRef.current
+    if (!rail) return undefined
+    let touchX = null
+    let touchY = null
+    let resumeTimer = null
+
+    const pauseAutomaticScroll = () => {
+      rail.classList.add('is-manual-scrolling')
+      window.clearTimeout(resumeTimer)
+      resumeTimer = window.setTimeout(() => rail.classList.remove('is-manual-scrolling'), 800)
+    }
+    const scrollWithWheel = (event) => {
+      event.preventDefault()
+      event.stopPropagation()
+      pauseAutomaticScroll()
+      rail.scrollLeft += (Math.abs(event.deltaX) > Math.abs(event.deltaY) ? event.deltaX : event.deltaY) * .28
+    }
+    const beginTouchScroll = (event) => {
+      touchX = event.touches[0]?.clientX ?? null
+      touchY = event.touches[0]?.clientY ?? null
+      pauseAutomaticScroll()
+    }
+    const scrollWithTouch = (event) => {
+      const nextX = event.touches[0]?.clientX
+      const nextY = event.touches[0]?.clientY
+      if (touchX === null || touchY === null || nextX === undefined || nextY === undefined) return
+      const deltaX = touchX - nextX
+      const deltaY = touchY - nextY
+      if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        event.preventDefault()
+        event.stopPropagation()
+        rail.scrollLeft += deltaX * .42
+      }
+      touchX = nextX
+      touchY = nextY
+      pauseAutomaticScroll()
+    }
+    const endTouchScroll = () => {
+      touchX = null
+      touchY = null
+      pauseAutomaticScroll()
+    }
+
+    rail.addEventListener('wheel', scrollWithWheel, { passive: false })
+    rail.addEventListener('touchstart', beginTouchScroll, { passive: true })
+    rail.addEventListener('touchmove', scrollWithTouch, { passive: false })
+    rail.addEventListener('touchend', endTouchScroll)
+    rail.addEventListener('touchcancel', endTouchScroll)
+    return () => {
+      window.clearTimeout(resumeTimer)
+      rail.removeEventListener('wheel', scrollWithWheel)
+      rail.removeEventListener('touchstart', beginTouchScroll)
+      rail.removeEventListener('touchmove', scrollWithTouch)
+      rail.removeEventListener('touchend', endTouchScroll)
+      rail.removeEventListener('touchcancel', endTouchScroll)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!activeArtwork) return undefined
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') setActiveArtwork(null)
+    }
+    window.addEventListener('keydown', closeOnEscape)
+    return () => window.removeEventListener('keydown', closeOnEscape)
+  }, [activeArtwork])
+
+  const gallerySet = (duplicate = false) => (
+    <div className="home-art-gallery-set" aria-hidden={duplicate || undefined}>
+      {artGallery.map((artwork, index) => (
+        <button
+          type="button"
+          tabIndex={duplicate ? -1 : 0}
+          key={`${duplicate ? 'duplicate-' : ''}${artwork.src}-${index}`}
+          onClick={() => setActiveArtwork(artwork)}
+          aria-label={`Enlarge ${artwork.title}`}
+        >
+          <img src={artwork.src} alt={duplicate ? '' : artwork.alt} />
+        </button>
+      ))}
+    </div>
+  )
+
+  return (
+    <>
+      <div className="home-art-gallery" ref={railRef} aria-label="Scrolling art gallery">
+        <div className="home-art-gallery-track">
+          {gallerySet()}
+          {gallerySet(true)}
+        </div>
+      </div>
+      {activeArtwork && (
+        <div className="art-gallery-lightbox" role="dialog" aria-modal="true" aria-label={activeArtwork.title} onClick={() => setActiveArtwork(null)}>
+          <figure onClick={(event) => event.stopPropagation()}>
+            <img src={activeArtwork.src} alt={activeArtwork.alt} />
+            <figcaption><strong>{activeArtwork.title}</strong><span>{activeArtwork.medium}</span></figcaption>
+            <button type="button" onClick={() => setActiveArtwork(null)} aria-label="Close enlarged artwork">×</button>
+          </figure>
+        </div>
+      )}
+    </>
+  )
+}
+
 function VisualArchive() {
   const [activeArtwork, setActiveArtwork] = useState(null)
 
@@ -331,7 +441,7 @@ function VisualArchive() {
   )
 }
 
-function DraggableItem({ children, className = '', initialLayer = 1, label, style }) {
+function DraggableItem({ children, className = '', initialLayer = 1, label, onDragged, style }) {
   const [offset, setOffset] = useState({ x: 0, y: 0 })
   const [layer, setLayer] = useState(initialLayer)
   const dragRef = useRef(null)
@@ -365,9 +475,11 @@ function DraggableItem({ children, className = '', initialLayer = 1, label, styl
 
   const endDrag = (event) => {
     if (dragRef.current?.pointerId !== event.pointerId) return
-    suppressClickRef.current = movedRef.current
+    const wasMoved = movedRef.current
+    suppressClickRef.current = wasMoved
     dragRef.current = null
     if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId)
+    if (wasMoved) onDragged?.()
     window.setTimeout(() => { suppressClickRef.current = false }, 0)
   }
 
@@ -392,6 +504,7 @@ function DraggableItem({ children, className = '', initialLayer = 1, label, styl
     setOffset((current) => ({ x: current.x + x, y: current.y + y }))
     topTedxLayer += 1
     setLayer(topTedxLayer)
+    onDragged?.()
   }
 
   return (
@@ -413,8 +526,66 @@ function DraggableItem({ children, className = '', initialLayer = 1, label, styl
   )
 }
 
-function TedxBrochure({ isOpen, setIsOpen, showInside, setShowInside }) {
+function TedxHandHint({ children, className = '' }) {
+  return <span className={`tedx-hand-hint ${className}`} aria-hidden="true"><span>{children}</span><i /></span>
+}
+
+function TedxLiquidGlassSurface() {
+  const hostRef = useRef(null)
+
+  useEffect(() => {
+    const host = hostRef.current
+    if (!host) return undefined
+
+    window.glassControls = {
+      edgeIntensity: .034,
+      rimIntensity: .14,
+      baseIntensity: .018,
+      edgeDistance: .11,
+      rimDistance: 1.05,
+      baseDistance: .08,
+      cornerBoost: .045,
+      rippleEffect: .035,
+      blurRadius: .6,
+    }
+
+    const glass = new LiquidGlassContainer({ borderRadius: 34, tintOpacity: 0 })
+    glass.warp = true
+    glass.element.classList.add('tedx-liquid-glass-canvas')
+    glass.element.style.pointerEvents = 'none'
+    glass.canvas.style.zIndex = '0'
+    host.appendChild(glass.element)
+
+    const draggable = host.closest('.tedx-draggable')
+    let refreshFrame = 0
+    const refresh = () => {
+      window.cancelAnimationFrame(refreshFrame)
+      refreshFrame = window.requestAnimationFrame(() => {
+        glass.updateSizeFromDOM()
+        glass.render?.()
+      })
+    }
+    const movementObserver = new MutationObserver(refresh)
+    if (draggable) movementObserver.observe(draggable, { attributes: true, attributeFilter: ['style', 'class'] })
+    const sizeObserver = new ResizeObserver(refresh)
+    sizeObserver.observe(host)
+    refresh()
+
+    return () => {
+      window.cancelAnimationFrame(refreshFrame)
+      movementObserver.disconnect()
+      sizeObserver.disconnect()
+      glass.destroy()
+      glass.element.remove()
+    }
+  }, [])
+
+  return <div ref={hostRef} className="tedx-liquid-glass-surface" aria-hidden="true" />
+}
+
+function TedxBrochure({ isOpen, setIsOpen, showInside, setShowInside, onDragged, onInteract, showClickHint }) {
   const turnBrochure = () => {
+    onInteract?.()
     if (!isOpen) {
       setIsOpen(true)
       return
@@ -433,6 +604,7 @@ function TedxBrochure({ isOpen, setIsOpen, showInside, setShowInside }) {
       className={`tedx-object tedx-brochure${isOpen ? ' is-open' : ''}${showInside ? ' is-inside' : ''}`}
       initialLayer={4}
       label="Interactive TEDxUofW brochure"
+      onDragged={onDragged}
       style={{ '--rotation': '6deg' }}
     >
       <button
@@ -447,6 +619,7 @@ function TedxBrochure({ isOpen, setIsOpen, showInside, setShowInside }) {
         </span>
       </button>
       {isOpen && <button className="tedx-brochure-close" type="button" onClick={closeBrochure} aria-label="Close and fold the brochure">×</button>}
+      {showClickHint && <TedxHandHint className="is-brochure-hint">click me</TedxHandHint>}
     </DraggableItem>
   )
 }
@@ -456,9 +629,11 @@ function VisualCase({ project }) {
   const [pileVersion, setPileVersion] = useState(0)
   const [brochureOpen, setBrochureOpen] = useState(false)
   const [brochureInside, setBrochureInside] = useState(false)
+  const [interactionHint, setInteractionHint] = useState('drag')
   const videoRef = useRef(null)
 
   const toggleVideo = () => {
+    setInteractionHint(null)
     const video = videoRef.current
     if (!video) return
     if (video.paused) video.play()
@@ -470,6 +645,7 @@ function VisualCase({ project }) {
     setVideoPlaying(false)
     setBrochureOpen(false)
     setBrochureInside(false)
+    setInteractionHint('drag')
     topTedxLayer = 20
     setPileVersion((version) => version + 1)
   }
@@ -488,28 +664,31 @@ function VisualCase({ project }) {
     <main className="tedx-playground" id="top" onPointerDown={dismissActiveView}>
       <a className="tedx-back" href="/visual"><span aria-hidden="true">←</span> Visual archive</a>
 
-      <DraggableItem key={`artboard-${pileVersion}`} className="tedx-object tedx-artboard" initialLayer={2} label="TEDxUofW poster" style={{ '--rotation': '4deg' }}>
+      <DraggableItem key={`artboard-${pileVersion}`} className="tedx-object tedx-artboard" initialLayer={2} label="TEDxUofW poster" onDragged={() => setInteractionHint(null)} style={{ '--rotation': '4deg' }}>
         <img src="/tedx-artboard.svg" alt="TEDxUofW event artwork" draggable="false" />
       </DraggableItem>
 
-      <DraggableItem key={`bubbly-${pileVersion}`} className="tedx-object tedx-bubbly" initialLayer={5} label="Imprints title artwork" style={{ '--rotation': '-2deg' }}>
+      <DraggableItem key={`bubbly-${pileVersion}`} className="tedx-object tedx-bubbly" initialLayer={5} label="Imprints title artwork" onDragged={() => setInteractionHint(null)} style={{ '--rotation': '-2deg' }}>
         <img src="/tedx-imprint-bubbly.svg" alt="Imprints title in bubbly lettering" draggable="false" />
       </DraggableItem>
 
-      <DraggableItem key={`x-${pileVersion}`} className="tedx-object tedx-x-mark" initialLayer={7} label="TEDx X mark" style={{ '--rotation': '12deg' }}>
+      <DraggableItem key={`x-${pileVersion}`} className="tedx-object tedx-x-mark" initialLayer={7} label="TEDx X mark" onDragged={() => setInteractionHint(null)} style={{ '--rotation': '12deg' }}>
         <img src="/tedx-x-logo.svg" alt="Abstract white X" draggable="false" />
+        {interactionHint === 'drag' && <TedxHandHint className="is-drag-hint">drag me</TedxHandHint>}
       </DraggableItem>
 
-      <DraggableItem key={`wordmark-${pileVersion}`} className="tedx-object tedx-wordmark" initialLayer={6} label="Imprints wordmark" style={{ '--rotation': '-2deg' }}>
+      <DraggableItem key={`wordmark-${pileVersion}`} className="tedx-object tedx-wordmark" initialLayer={6} label="Imprints wordmark" onDragged={() => setInteractionHint(null)} style={{ '--rotation': '-2deg' }}>
         <img src="/tedx-imprint-black.png" alt="Imprints wordmark" draggable="false" />
       </DraggableItem>
 
-      <DraggableItem key={`role-${pileVersion}`} className="tedx-object tedx-note tedx-role-note" initialLayer={8} label="Role note" style={{ '--rotation': '-5deg' }}>
+      <DraggableItem key={`role-${pileVersion}`} className="tedx-object tedx-note tedx-role-note" initialLayer={8} label="Role note" onDragged={() => setInteractionHint(null)} style={{ '--rotation': '-5deg' }}>
+        <TedxLiquidGlassSurface />
         <span>My role</span>
         <strong>{project.role}</strong>
       </DraggableItem>
 
-      <DraggableItem key={`tools-${pileVersion}`} className="tedx-object tedx-note tedx-tools-note" initialLayer={9} label="Tools note" style={{ '--rotation': '4deg' }}>
+      <DraggableItem key={`tools-${pileVersion}`} className="tedx-object tedx-note tedx-tools-note" initialLayer={9} label="Tools note" onDragged={() => setInteractionHint(null)} style={{ '--rotation': '4deg' }}>
+        <TedxLiquidGlassSurface />
         <span>Tools used</span>
         <strong>Figma</strong>
         <strong>Adobe Premiere Pro</strong>
@@ -521,6 +700,9 @@ function VisualCase({ project }) {
         setIsOpen={setBrochureOpen}
         showInside={brochureInside}
         setShowInside={setBrochureInside}
+        onDragged={() => setInteractionHint('brochure')}
+        onInteract={() => setInteractionHint(null)}
+        showClickHint={interactionHint === 'brochure'}
       />
 
       <DraggableItem
@@ -528,6 +710,7 @@ function VisualCase({ project }) {
         className={`tedx-object tedx-video-card${videoPlaying ? ' is-playing' : ''}`}
         initialLayer={2}
         label="TEDxUofW promotion video"
+        onDragged={() => setInteractionHint('video')}
         style={{ '--rotation': '-2deg' }}
       >
         <video
@@ -544,6 +727,7 @@ function VisualCase({ project }) {
         <button className="tedx-video-toggle" type="button" onClick={toggleVideo} aria-label={videoPlaying ? 'Pause promotion video' : 'Play promotion video'}>
           <span aria-hidden="true">{videoPlaying ? 'Ⅱ' : '▶'}</span>
         </button>
+        {interactionHint === 'video' && <TedxHandHint className="is-video-hint">click me</TedxHandHint>}
       </DraggableItem>
 
       <button className="tedx-repile" type="button" onClick={repile}>Re-pile</button>
@@ -2115,6 +2299,7 @@ function App() {
             </ul>
           </div>
           <aside className="intro-notes" id="about" aria-label="About Vivian">
+            <HomeArtGallery />
             <p>Currently designing at Sportsexcitement</p>
             <p>Pursuing Informatics B.S. and Psychology B.A. at UW Seattle</p>
           </aside>
