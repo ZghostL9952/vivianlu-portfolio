@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Analytics } from '@vercel/analytics/react'
 import './App.css'
 import { caseStudies, caseStudyOrder } from './caseStudies'
 import LiquidGlassContainer from './vendor/liquid-glass-container'
@@ -2321,6 +2322,7 @@ function App() {
         <div className="footer-bottom"><p>© {new Date().getFullYear()} Vivian Lu</p><div className="footer-links"><a href="mailto:vivian.zifu.lu@gmail.com">Email</a><a href="/about">About</a><a href="#top">Back to top ↑</a></div></div>
       </footer>}
       </div>
+      <Analytics />
     </>
   )
 }
