@@ -6,9 +6,6 @@ import LiquidGlassContainer from './vendor/liquid-glass-container'
 import SpexVisual from './SpexVisual'
 
 const blockedCaseStudySlugs = new Set()
-const protectedCaseStudySlugs = new Set(['sportsexcitement'])
-const SPEX_ACCESS_KEY = 'vivian-spex-access'
-const SPEX_PASSWORD_HASH = '7a19dbc9778c1c19aefa60143dcd94a8fe4834df510abb564398a84682e25378'
 
 const LOADER_JUMP_DURATION_MS = 850
 const LOADER_JUMP_LOOPS = 2
@@ -117,7 +114,6 @@ function ProjectCard({ project }) {
   const [primaryTitle, ...secondaryTitle] = project.title.split(',')
   const projectContext = secondaryTitle.join(',').trim()
   const isUnderConstruction = blockedCaseStudySlugs.has(project.slug)
-  const isProtected = protectedCaseStudySlugs.has(project.slug)
   const artwork = <ProjectArtwork type={project.artwork} />
 
   return (
@@ -133,9 +129,8 @@ function ProjectCard({ project }) {
           </div>
         </div>
       ) : (
-        <a className={`project-visual ${project.tone}`} href={`/work/${project.slug}`} aria-label={`${isProtected ? 'Open password-protected' : 'View'} ${project.title} case study`}>
+        <a className={`project-visual ${project.tone}`} href={`/work/${project.slug}`} aria-label={`View ${project.title} case study`}>
           {artwork}
-          {isProtected && <span className="protected-project-badge" aria-hidden="true">NDA · Password protected</span>}
         </a>
       )}
       <div className="project-copy">
@@ -2184,86 +2179,6 @@ function CaseStudy({ project }) {
   )
 }
 
-async function hashPassword(value) {
-  const bytes = new TextEncoder().encode(value)
-  const digest = await window.crypto.subtle.digest('SHA-256', bytes)
-  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('')
-}
-
-function ProtectedCaseStudy({ project }) {
-  const [isUnlocked, setIsUnlocked] = useState(() => {
-    try {
-      return window.sessionStorage.getItem(SPEX_ACCESS_KEY) === 'granted'
-    } catch {
-      return false
-    }
-  })
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [isChecking, setIsChecking] = useState(false)
-
-  const handleSubmit = async (event) => {
-    event.preventDefault()
-    setIsChecking(true)
-    setError('')
-
-    try {
-      const passwordHash = await hashPassword(password)
-      if (passwordHash !== SPEX_PASSWORD_HASH) {
-        setError('That password is incorrect. Please try again.')
-        return
-      }
-
-      window.sessionStorage.setItem(SPEX_ACCESS_KEY, 'granted')
-      setPassword('')
-      setIsUnlocked(true)
-      window.scrollTo({ top: 0, behavior: 'instant' })
-    } catch {
-      setError('This browser could not verify the password. Please try again in a current browser.')
-    } finally {
-      setIsChecking(false)
-    }
-  }
-
-  if (isUnlocked) return <CaseStudy project={project} />
-
-  return (
-    <main className="spex-gate" id="top">
-      <section className="spex-gate-panel" aria-labelledby="spex-gate-title">
-        <div className="spex-gate-lock" aria-hidden="true">
-          <span />
-        </div>
-        <p className="spex-gate-eyebrow">SportsExcitement · NDA case study</p>
-        <h1 id="spex-gate-title">This work is password protected.</h1>
-        <p className="spex-gate-intro" id="spex-gate-description">Enter the shared password to view the full case study.</p>
-        <form className="spex-gate-form" onSubmit={handleSubmit} aria-describedby="spex-gate-description">
-          <label htmlFor="spex-password">Password</label>
-          <div className="spex-gate-field">
-            <input
-              id="spex-password"
-              type="password"
-              value={password}
-              onChange={(event) => {
-                setPassword(event.target.value)
-                if (error) setError('')
-              }}
-              autoComplete="current-password"
-              autoFocus
-              aria-invalid={Boolean(error)}
-              aria-describedby={error ? 'spex-password-error' : undefined}
-            />
-            <button type="submit" disabled={isChecking || !password}>
-              {isChecking ? 'Checking…' : 'View case study'}
-            </button>
-          </div>
-          <p className={`spex-gate-error${error ? ' is-visible' : ''}`} id="spex-password-error" role="alert">{error || '\u00a0'}</p>
-        </form>
-        <a className="spex-gate-back" href="/#work">← Back to selected work</a>
-      </section>
-    </main>
-  )
-}
-
 function LoadingIntro({ phase, primaryRef, flyStyle }) {
   if (phase === 'done') return null
 
@@ -2458,7 +2373,7 @@ function App() {
         </nav>
       </header>
 
-      {activeCaseStudy ? (protectedCaseStudySlugs.has(activeCaseStudy.slug) ? <ProtectedCaseStudy project={activeCaseStudy} /> : <CaseStudy project={activeCaseStudy} />) : activeVisualProject ? <VisualCase project={activeVisualProject} /> : activePage === 'work' ? <main>
+      {activeCaseStudy ? <CaseStudy project={activeCaseStudy} /> : activeVisualProject ? <VisualCase project={activeVisualProject} /> : activePage === 'work' ? <main>
         <section className={`intro${loaderPhase === 'done' ? ' annotations-ready' : ''}`} id="top" aria-labelledby="intro-heading">
           <div className="intro-primary">
             <div className="availability"><span /> Seattle · {seattleTime}</div>
