@@ -3,8 +3,12 @@ import { Analytics } from '@vercel/analytics/react'
 import './App.css'
 import { caseStudies, caseStudyOrder } from './caseStudies'
 import LiquidGlassContainer from './vendor/liquid-glass-container'
+import SpexVisual from './SpexVisual'
 
-const blockedCaseStudySlugs = new Set(['sportsexcitement'])
+const blockedCaseStudySlugs = new Set()
+const protectedCaseStudySlugs = new Set(['sportsexcitement'])
+const SPEX_ACCESS_KEY = 'vivian-spex-access'
+const SPEX_PASSWORD_HASH = '7a19dbc9778c1c19aefa60143dcd94a8fe4834df510abb564398a84682e25378'
 
 const LOADER_JUMP_DURATION_MS = 850
 const LOADER_JUMP_LOOPS = 2
@@ -113,6 +117,7 @@ function ProjectCard({ project }) {
   const [primaryTitle, ...secondaryTitle] = project.title.split(',')
   const projectContext = secondaryTitle.join(',').trim()
   const isUnderConstruction = blockedCaseStudySlugs.has(project.slug)
+  const isProtected = protectedCaseStudySlugs.has(project.slug)
   const artwork = <ProjectArtwork type={project.artwork} />
 
   return (
@@ -128,8 +133,9 @@ function ProjectCard({ project }) {
           </div>
         </div>
       ) : (
-        <a className={`project-visual ${project.tone}`} href={`/work/${project.slug}`} aria-label={`View ${project.title} case study`}>
+        <a className={`project-visual ${project.tone}`} href={`/work/${project.slug}`} aria-label={`${isProtected ? 'Open password-protected' : 'View'} ${project.title} case study`}>
           {artwork}
+          {isProtected && <span className="protected-project-badge" aria-hidden="true">NDA · Password protected</span>}
         </a>
       )}
       <div className="project-copy">
@@ -1931,7 +1937,8 @@ function SurveyChart({ chart }) {
   )
 }
 
-function CaseStudySection({ section, index, sectionId }) {
+function CaseStudySection({ section, index, sectionId, groupNumber, subsection = false }) {
+  const Heading = subsection ? 'h3' : 'h2'
   const isOpeningSection = index === 0
   const hasGraphic = !isOpeningSection && !section.hideVisual
   const sectionDetails = (
@@ -1948,10 +1955,10 @@ function CaseStudySection({ section, index, sectionId }) {
   )
 
   return (
-    <section className={`case-section section-${section.visual}${index % 2 ? ' is-reversed' : ''}${isOpeningSection ? ' is-centered-intro' : ''}${!hasGraphic && !isOpeningSection ? ' has-no-graphic' : ''}`} id={sectionId}>
+    <section className={`case-section section-${section.visual}${index % 2 ? ' is-reversed' : ''}${isOpeningSection ? ' is-centered-intro' : ''}${!hasGraphic && !isOpeningSection ? ' has-no-graphic' : ''}${section.fullWidth ? ' is-full-width' : ''}${subsection ? ' is-subsection' : ''}`} id={sectionId}>
       <div className="case-section-copy">
-        <p className="case-eyebrow">{String(index + 1).padStart(2, '0')} · {section.eyebrow}</p>
-        <h2>{section.title}</h2>
+        {!section.ageGroup && <p className="case-eyebrow">{!subsection && `${String(groupNumber ?? index + 1).padStart(2, '0')} · `}{section.eyebrow}</p>}
+        <Heading>{section.title}</Heading>
         {isOpeningSection ? (
           <div className={`case-overview-layout${section.overviewChart ? ' has-chart' : ''}`}>
             <div className="case-overview-copy">
@@ -1962,7 +1969,9 @@ function CaseStudySection({ section, index, sectionId }) {
           </div>
         ) : sectionDetails}
       </div>
-      {hasGraphic && <CaseGraphic kind={section.visual} label={section.title} />}
+      {hasGraphic && (section.visual.startsWith('spex-')
+        ? <SpexVisual kind={section.visual} ageGroup={section.ageGroup} />
+        : <CaseGraphic kind={section.visual} label={section.title} />)}
       {section.followup && (
         <div className="case-section-followup">
           <h3>{section.followup.title}</h3>
@@ -1975,6 +1984,59 @@ function CaseStudySection({ section, index, sectionId }) {
   )
 }
 
+function SpexSolutionTabs({ project, group }) {
+  const fromHash = () => group.indices.find((index) => window.location.hash === `#${project.slug}-section-${index + 1}`) ?? group.indices[0]
+  const [selected, setSelected] = useState(fromHash)
+  const tabRefs = useRef([])
+
+  useEffect(() => {
+    const selectLinkedAge = () => {
+      const index = group.indices.find((item) => window.location.hash === `#${project.slug}-section-${item + 1}`)
+      if (index !== undefined) setSelected(index)
+    }
+    window.addEventListener('hashchange', selectLinkedAge)
+    return () => window.removeEventListener('hashchange', selectLinkedAge)
+  }, [project.slug, group.indices])
+
+  const onTabKeyDown = (event, position) => {
+    const count = group.indices.length
+    const next = event.key === 'ArrowRight' ? (position + 1) % count
+      : event.key === 'ArrowLeft' ? (position + count - 1) % count
+        : event.key === 'Home' ? 0 : event.key === 'End' ? count - 1 : null
+    if (next === null) return
+    event.preventDefault()
+    setSelected(group.indices[next])
+    tabRefs.current[next]?.focus()
+  }
+
+  return (
+    <div className="spex-age-tabs">
+      <div className="spex-age-tablist" role="tablist" aria-label="Sign-up by age">
+        {group.indices.map((index, position) => (
+          <button key={index} type="button" role="tab" id={`spex-age-tab-${index}`}
+            ref={(element) => { tabRefs.current[position] = element }}
+            aria-selected={selected === index} aria-controls={`${project.slug}-section-${index + 1}`}
+            tabIndex={selected === index ? 0 : -1}
+            onClick={() => setSelected(index)} onKeyDown={(event) => onTabKeyDown(event, position)}>
+            {project.sections[index].title}
+          </button>
+        ))}
+      </div>
+      {group.indices.map((index) => (
+        <div key={index} className="spex-age-panel" role="tabpanel" id={`${project.slug}-section-${index + 1}`}
+          aria-labelledby={`spex-age-tab-${index}`} hidden={selected !== index} tabIndex={0}>
+          {selected === index && <>
+            <div className="case-section-copy">
+              {project.sections[index].paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+            </div>
+            <SpexVisual kind="spex-flow" ageGroup={project.sections[index].ageGroup} />
+          </>}
+        </div>
+      ))}
+    </div>
+  )
+}
+
 function CaseStudy({ project }) {
   const [activeSection, setActiveSection] = useState(0)
   const [menuVisible, setMenuVisible] = useState(true)
@@ -1983,7 +2045,9 @@ function CaseStudy({ project }) {
     .filter((slug) => slug !== project.slug && !blockedCaseStudySlugs.has(slug))
     .map((slug) => caseStudies[slug])
   const cardProject = projects.find((item) => item.slug === project.slug)
-  const jumpMenuItems = project.slug === 'costco'
+  const jumpMenuItems = project.sectionGroups
+    ? project.sectionGroups.map((group) => ({ label: group.label, sectionIndex: group.indices[0], activeSections: group.indices, anchor: `${project.slug}-${group.id}` }))
+    : project.slug === 'costco'
     ? [
         { label: 'Overview', sectionIndex: 0, activeSections: [0] },
         { label: 'Redesign', sectionIndex: 1, activeSections: [1, 2, 3] },
@@ -1996,14 +2060,22 @@ function CaseStudy({ project }) {
       }))
 
   useEffect(() => {
-    const sections = project.sections.map((_, index) => document.getElementById(`${project.slug}-section-${index + 1}`)).filter(Boolean)
-    const observer = new IntersectionObserver((entries) => {
-      const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
-      if (visible) setActiveSection(sections.indexOf(visible.target))
-    }, { rootMargin: '-24% 0px -52% 0px', threshold: [0, .2, .5] })
-
-    sections.forEach((section) => observer.observe(section))
-    return () => observer.disconnect()
+    const sections = (project.sectionGroups
+      ? project.sectionGroups.map((group) => ({ node: document.getElementById(`${project.slug}-${group.id}`), index: group.indices[0] }))
+      : project.sections.map((_, index) => ({ node: document.getElementById(`${project.slug}-section-${index + 1}`), index })))
+      .filter(({ node }) => node)
+    let observer
+    const observeSections = () => {
+      observer?.disconnect()
+      observer = new IntersectionObserver((entries) => {
+        const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0]
+        if (visible) setActiveSection(sections.find(({ node }) => node === visible.target).index)
+      }, { rootMargin: `-${Math.round(window.innerHeight * .24)}px 0px -${Math.round(window.innerHeight * .52)}px 0px`, threshold: [0, .2, .5] })
+      sections.forEach(({ node }) => observer.observe(node))
+    }
+    observeSections()
+    window.addEventListener('resize', observeSections)
+    return () => { observer.disconnect(); window.removeEventListener('resize', observeSections) }
   }, [project])
 
   useEffect(() => {
@@ -2023,7 +2095,7 @@ function CaseStudy({ project }) {
       <header className="case-hero">
         <div className="case-hero-copy">
           <p className="case-eyebrow">{project.eyebrow}</p>
-          <p className="case-hero-date">{project.meta.Timeline}</p>
+          {project.meta.Timeline && <p className="case-hero-date">{project.meta.Timeline}</p>}
           <h1>{project.title}</h1>
           <p className="case-summary">{project.summary}</p>
           {project.slug === 'somacanvas' && (
@@ -2054,7 +2126,22 @@ function CaseStudy({ project }) {
       </header>
       <div className="case-content-layout">
         <div className="case-story">
-          {project.sections.map((section, index) => (
+          {project.sectionGroups ? project.sectionGroups.map((group, groupIndex) => (
+            <section className="case-section-group" id={`${project.slug}-${group.id}`} aria-label={group.label} key={group.id}>
+              {group.title && <header className="case-group-heading">
+                <p className="case-eyebrow">{String(groupIndex + 1).padStart(2, '0')} · {group.label}</p>
+                <h2>{group.title}</h2>
+              </header>}
+              {group.id === 'solution' ? <SpexSolutionTabs project={project} group={group} /> : group.indices.map((index, position) => <CaseStudySection
+                section={project.sections[index]}
+                index={index}
+                sectionId={`${project.slug}-section-${index + 1}`}
+                groupNumber={groupIndex + 1}
+                subsection={Boolean(group.title) || position > 0}
+                key={project.sections[index].title}
+              />)}
+            </section>
+          )) : project.sections.map((section, index) => (
             <CaseStudySection
               section={section}
               index={index}
@@ -2071,7 +2158,8 @@ function CaseStudy({ project }) {
           {jumpMenuItems.map((item) => (
             <a
               className={item.activeSections.includes(activeSection) ? 'active' : ''}
-              href={`#${project.slug}-section-${item.sectionIndex + 1}`}
+              href={`#${item.anchor ?? `${project.slug}-section-${item.sectionIndex + 1}`}`}
+              aria-current={item.activeSections.includes(activeSection) ? 'location' : undefined}
               key={item.label}
             >
               <span>{item.label}</span>
@@ -2092,6 +2180,86 @@ function CaseStudy({ project }) {
           ))}
         </div>
       </aside>
+    </main>
+  )
+}
+
+async function hashPassword(value) {
+  const bytes = new TextEncoder().encode(value)
+  const digest = await window.crypto.subtle.digest('SHA-256', bytes)
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('')
+}
+
+function ProtectedCaseStudy({ project }) {
+  const [isUnlocked, setIsUnlocked] = useState(() => {
+    try {
+      return window.sessionStorage.getItem(SPEX_ACCESS_KEY) === 'granted'
+    } catch {
+      return false
+    }
+  })
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [isChecking, setIsChecking] = useState(false)
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    setIsChecking(true)
+    setError('')
+
+    try {
+      const passwordHash = await hashPassword(password)
+      if (passwordHash !== SPEX_PASSWORD_HASH) {
+        setError('That password is incorrect. Please try again.')
+        return
+      }
+
+      window.sessionStorage.setItem(SPEX_ACCESS_KEY, 'granted')
+      setPassword('')
+      setIsUnlocked(true)
+      window.scrollTo({ top: 0, behavior: 'instant' })
+    } catch {
+      setError('This browser could not verify the password. Please try again in a current browser.')
+    } finally {
+      setIsChecking(false)
+    }
+  }
+
+  if (isUnlocked) return <CaseStudy project={project} />
+
+  return (
+    <main className="spex-gate" id="top">
+      <section className="spex-gate-panel" aria-labelledby="spex-gate-title">
+        <div className="spex-gate-lock" aria-hidden="true">
+          <span />
+        </div>
+        <p className="spex-gate-eyebrow">SportsExcitement · NDA case study</p>
+        <h1 id="spex-gate-title">This work is password protected.</h1>
+        <p className="spex-gate-intro" id="spex-gate-description">Enter the shared password to view the full case study.</p>
+        <form className="spex-gate-form" onSubmit={handleSubmit} aria-describedby="spex-gate-description">
+          <label htmlFor="spex-password">Password</label>
+          <div className="spex-gate-field">
+            <input
+              id="spex-password"
+              type="password"
+              value={password}
+              onChange={(event) => {
+                setPassword(event.target.value)
+                if (error) setError('')
+              }}
+              autoComplete="current-password"
+              autoFocus
+              aria-invalid={Boolean(error)}
+              aria-describedby={error ? 'spex-password-error' : undefined}
+            />
+            <button type="submit" disabled={isChecking || !password}>
+              {isChecking ? 'Checking…' : 'View case study'}
+            </button>
+          </div>
+          <p className={`spex-gate-error${error ? ' is-visible' : ''}`} id="spex-password-error" role="alert">{error || '\u00a0'}</p>
+        </form>
+        <a className="spex-gate-back" href="/#work">← Back to selected work</a>
+      </section>
     </main>
   )
 }
@@ -2290,7 +2458,7 @@ function App() {
         </nav>
       </header>
 
-      {activeCaseStudy ? <CaseStudy project={activeCaseStudy} /> : activeVisualProject ? <VisualCase project={activeVisualProject} /> : activePage === 'work' ? <main>
+      {activeCaseStudy ? (protectedCaseStudySlugs.has(activeCaseStudy.slug) ? <ProtectedCaseStudy project={activeCaseStudy} /> : <CaseStudy project={activeCaseStudy} />) : activeVisualProject ? <VisualCase project={activeVisualProject} /> : activePage === 'work' ? <main>
         <section className={`intro${loaderPhase === 'done' ? ' annotations-ready' : ''}`} id="top" aria-labelledby="intro-heading">
           <div className="intro-primary">
             <div className="availability"><span /> Seattle · {seattleTime}</div>
