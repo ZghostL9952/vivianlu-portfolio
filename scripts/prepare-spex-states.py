@@ -26,6 +26,8 @@ def layer(source, elements, name):
     save(root, name)
 
 
+# The numeric child indices below depend on the original SVG export structure.
+# Inspect new exports before rerunning: reordered layers require updating these indices.
 roles = ET.parse(ROOT / 'RoleSelection.svg').getroot()
 neutral = deepcopy(roles)
 neutral[18].set('fill', 'white')

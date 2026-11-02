@@ -1,3 +1,8 @@
+// Edit case-study copy and section order here. Keys/slugs must match App.jsx projects.
+// theme selects .theme-* styles; section.visual selects CaseGraphic or SpexVisual.
+// fullWidth expands a section; hideVisual suppresses its graphic.
+// sectionGroups.indices are zero-based positions in sections: update them after reordering.
+// The group id "solution" renders SPEX age tabs, whose ageGroup must match walkthroughFlows.
 export const caseStudies = {
   sportsexcitement: {
     slug: 'sportsexcitement',
@@ -10,14 +15,14 @@ export const caseStudies = {
     meta: {
       Role: 'UX Design Intern',
       Team: 'Product, design & engineering',
-      Status: 'In implementation',
+      'Tools used': 'Figma, User interviews, Competitive analysis, WCAG 2.1 AA checks',
       Focus: 'Registration & onboarding',
     },
     sectionGroups: [
       { id: 'overview', label: 'Overview', indices: [0] },
       { id: 'challenge', label: 'Challenge', indices: [1] },
       { id: 'process', label: 'Design process', indices: [2, 3] },
-      { id: 'solution', label: 'Solution', title: 'Sign up your way.', indices: [4, 5, 6] },
+      { id: 'solution', label: 'Solution', title: 'Easy sign-up', indices: [4, 5, 6] },
       { id: 'impact', label: 'Impact', indices: [7] },
     ],
     sections: [
@@ -36,23 +41,23 @@ export const caseStudies = {
           'Designing for a community that includes minors brings safety and privacy to the center of onboarding. COPPA and other applicable laws were part of the constraints we needed to consider alongside a welcoming first experience.',
           'The challenge was to keep sign-up short while introducing age restrictions and tailoring the experience to each person’s goal: joining as an athlete, coach, parent, or community member.',
         ],
-        visual: 'spex-challenge',
-        callout: 'How might we make the first step feel simple while respecting different ages, responsibilities, and goals?',
+        hideVisual: true,
+        fullWidth: true,
+        callout: 'How might we make the first step feel simple while respecting different ages, responsibilities, and goals?'
       },
       {
         eyebrow: 'Design process',
-        title: 'How I built it.',
+        title: 'What shaped my design decisions.',
         paragraphs: [
-          'I moved from competitive analysis and defining age constraints with PMs to low-fidelity sketches, high-fidelity design, and team review. The project is now in implementation, where I’m working with developers to bring the designs to life.',
+          'I started by talking with people who used competing sports platforms to understand where registration became frustrating. Alongside competitive analysis, those conversations helped me shape a sign-up journey around the different needs of coaches, parents, athletes, and community members, leading to 3 priorities:',
         ],
-        visual: 'spex-process',
+        visual: 'spex-challenge',
         fullWidth: true,
       },
       {
-        eyebrow: 'User journey mapping',
-        title: 'Plan each step.',
+        // title: 'User journey mapping',
         paragraphs: [
-          'The registration map makes the branching journey visible: where someone enters, how age changes their path, and where a parent becomes part of the experience. It provides a shared reference for connecting individual screens into a coherent sign-up flow.',
+          'The 3 priorities shaped the registration map: where someone enters, how age changes their path, and where a parent becomes part of the experience. It provides a shared reference for connecting individual screens into a coherent sign-up flow.',
         ],
         visual: 'spex-journey',
         fullWidth: true,
@@ -89,12 +94,13 @@ export const caseStudies = {
       },
       {
         eyebrow: 'Impact',
-        title: 'What we hope to improve.',
+        title: 'Fewer fields, more signups',
         paragraphs: [
-          'The designs are in implementation, and we haven’t run usability testing yet. Increased trust, better protection, easier sign-up, and a more personalized experience are the intended outcomes—not measured results.',
-          'Future usability testing will help us understand whether people can navigate the right path for their age, complete sign-up with less friction, and feel confident about joining the community.',
+          'I cut the upfront registration fields in half by removing information already collected during team setup and verification. Signups increased 11% following the redesign.',
+          'The five-step flow shipped across mobile and desktop in collaboration with product managers and engineers, with age and privacy requirements refined through team critiques and WCAG 2.1 AA checks.',
         ],
         visual: 'spex-impact',
+        hideVisual: true,
         fullWidth: true,
       },
     ],
@@ -104,11 +110,11 @@ export const caseStudies = {
     number: '02',
     theme: 'advisr',
     eyebrow: 'AdvisrLab · UW iSchool Capstone',
-    title: 'Designing an AI advisor that knows when not to answer.',
+    title: 'AI advisor that knows when to stop answering.',
     summary: 'A source-grounded advising assistant that gives students a fast answer—or a clear path to the right human.',
     heroGraphic: 'advisr-chat',
     meta: {
-      Role: 'Team Lead · Research · Prompt Engineering',
+      Role: 'Product Lead · Research · Prompt Design',
       Team: '5 people',
       Timeline: 'Jan – May 2026',
       Tools: 'UW Purple AI · Figma · Miro',
@@ -119,7 +125,7 @@ export const caseStudies = {
         title: 'Students needed faster, lower-pressure advising.',
         overviewChart: {
           title: 'Early student survey',
-          sample: 'n=14–16',
+          sample: 'n=20',
           items: [
             { value: 56, label: 'Need it now', detail: '56% selected an immediate answer as a reason to use an AI advisor.' },
             { value: 57, label: 'Avoid asking', detail: '57% said they always or often avoid advising questions because of social fear.' },
@@ -127,7 +133,7 @@ export const caseStudies = {
         },
         paragraphs: [
           'UW iSchool students were navigating long waits, scattered policy pages, and the social friction of asking a “simple” question. Advisors, meanwhile, were spending limited time on repeatable requests.',
-          'As team lead, I guided research, product scope, and prompt design for a five-person capstone team. Our goal was not to replace advisors; it was to make routine help immediate without making high-stakes guidance reckless.',
+          'As Product Lead, I guided a five-person capstone team through research, product scope, and prompt design. Interviews with 3 advisors and 2 peer advisors, alongside a survey of 20 Informatics students, shifted our focus from answering as many questions as possible to providing guidance backed by official sources.',
         ],
         visual: 'advisr-context',
         callout: 'Fast answers only help when students can see why they should trust them.',
@@ -145,20 +151,22 @@ export const caseStudies = {
         eyebrow: 'Design',
         title: 'We designed a decision system, not a chatbot personality.',
         paragraphs: [
-          'We converted official advising content into a focused Markdown knowledge base, then separated facts from behavior rules so either layer could be maintained without rewriting the whole agent.',
-          'Every question followed one of three paths: answer from an approved source, ask for the one detail that changes the answer, or escalate with a single best next step. Responses exposed the source and confidence instead of hiding the system’s limits.',
+          'We achieved 96% accuracy in answering questions from iSchool FAQ list during internal testing. The bot was able to ask follow up questions 73% of the time. Limitations due to model usage and the nature of AI limitations.',
         ],
         visual: 'advisr-system',
+        graphicBeforeText: true,
+        portal: true,
+        fullWidth: true,
       },
       {
         eyebrow: 'Outcome',
-        title: 'A safer MVP and an honest boundary.',
+        title: 'A board-approved pilot',
         paragraphs: [
-          'Testing with 5+ iSchool students led us to add clarifying questions, cautious handling for graduation decisions, official course titles, and condition-based answers for policies such as add codes.',
-          'We delivered the prompt system, curated source files, escalation logic, and a maintainable handoff package. The MVP still had real constraints: no student-record access, no live data, and manual content updates—so the product was positioned as a first line of support, never the final authority.',
+          'Testing with 8 students and advisors helped us refine when the assistant should answer, ask for more context, or escalate to a person. Those sessions informed the agent’s response rules and its handling of questions that needed advisor judgment.',
+          'I presented our research and prototypes to advisors, UW IT, and the advising board, then incorporated their feedback and documented the handoff. The board-approved pilot is now live on the iSchool’s internal website. Its scope remains a first line of support, with no student-record access or live registration data and with source content maintained manually.',
         ],
         visual: 'advisr-outcome',
-        callout: 'Success was not answering everything. It was making the next safe step obvious.',
+        fullWidth: true,
       },
     ],
   },
@@ -171,10 +179,10 @@ export const caseStudies = {
     summary: 'A browser-based gesture drawing tool that turns imprecision into texture, and creating into play.',
     heroGraphic: 'soma-canvas',
     meta: {
-      Role: 'Team Lead · UX Designer · Full Stack Developer',
+      Role: 'Team Lead & UX Designer',
       Team: 'Zima Blue · 3 people',
       Timeline: 'Apr – Aug 2026',
-      Tools: 'MediaPipe · Figma · Claude Code · Codex',
+      Tools: 'React · MediaPipe · Figma · Claude Code · Codex',
     },
     sections: [
       {
@@ -191,7 +199,7 @@ export const caseStudies = {
         eyebrow: 'Interaction model',
         title: 'Your hand shape is the tool.',
         paragraphs: [
-          'SomaCanvas uses MediaPipe hand tracking in the browser. Five gestures become a rest state, magnetic circles, liquid edits, twin-finger ribbons, and orbital constellations.',
+          'I designed and built SomaCanvas with React and MediaPipe to turn hand gestures into abstract drawing without precise cursor control. Five gestures become a rest state, magnetic circles, liquid edits, twin-finger ribbons, and orbital constellations.',
           'The camera feed is the canvas, keeping the body spatially connected to the marks instead of splitting attention between a webcam preview and a blank drawing area.',
         ],
         visual: 'gesture-map',
@@ -210,7 +218,7 @@ export const caseStudies = {
         eyebrow: 'Evaluation',
         title: 'Confusion became experimentation, then intention.',
         paragraphs: [
-          'Seven participants completed three open-ended drawing trials with no tutorial. We measured whether they could learn the gestures and whether making art felt different afterward.',
+          'We evaluated SomaCanvas with 7 participants across 3 open-ended drawing trials. Average self-reported creative confidence rose from 2.43 to 3.29 on a 5-point scale after use.',
           'All six participants who completed the comparison said later attempts improved. By the third trial, users described more direction, polish, and engagement.',
         ],
         visual: 'confidence-chart',
@@ -298,4 +306,5 @@ export const caseStudies = {
   },
 }
 
+// Order for the "More projects" links; homepage card order is set separately in App.jsx.
 export const caseStudyOrder = ['sportsexcitement', 'advisrlab', 'somacanvas', 'costco']

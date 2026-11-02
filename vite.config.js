@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import process from 'node:process'
 
+// Replaces __SITE_URL__ in index.html social previews; set VITE_SITE_URL to override the deployment domain.
 const socialMetadata = () => ({
   name: 'social-metadata',
   transformIndexHtml(html) {

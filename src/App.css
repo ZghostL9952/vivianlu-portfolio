@@ -1,8 +1,13 @@
+/* Style map: shell/loader/navigation → home/About → Visual/TEDx → project cards
+   and case-study layouts → project-specific graphics → responsive overrides.
+   Search by the className in App.jsx. Later rules and media queries may override
+   earlier declarations; SPEX-specific styles also live in SpexVisual.css and SpexWalkthrough.css. */
+/* Shared page width and case-study rail alignment. */
 .site-shell {
   --nav-side-padding: 140px;
   --monogram-width: 46px;
   --site-shell-edge: max(24px, calc((100vw - 1180px) / 2));
-  --case-content-edge: calc(var(--nav-side-padding) + var(--monogram-width) + 28px);
+  --case-content-edge: 284px;
   --case-left-overhang: max(0px, calc(var(--site-shell-edge) - var(--case-content-edge)));
   --case-rail-width: max(0px, calc(var(--case-content-edge) - var(--site-shell-edge)));
   width: min(100% - 48px, 1180px);
@@ -164,6 +169,7 @@
   100% { transform: translateX(0) rotate(360deg) scale(1); }
 }
 
+/* Header, logo, and primary navigation. */
 .site-header {
   width: 100vw;
   height: 96px;
@@ -297,6 +303,7 @@
 
 .nav-utility a:hover { text-decoration: underline; text-underline-offset: 4px; }
 
+/* Homepage introduction. */
 .intro {
   display: grid;
   grid-template-columns: minmax(0, 780px) minmax(230px, 1fr);
@@ -340,6 +347,7 @@
   line-height: 1.6;
 }
 
+/* About page biography and reading lists. */
 .about-page { padding: clamp(70px, 8vw, 112px) 0 40px; }
 
 .about-intro { min-height: 710px; }
@@ -554,6 +562,7 @@
   .about-photo { opacity: 1; animation: none; }
 }
 
+/* Visual archive cards and scrolling art gallery. */
 .visual-archive {
   min-height: calc(100svh - 96px);
   display: grid;
@@ -794,6 +803,7 @@
   border-bottom: 1px solid rgba(23, 23, 20, .12);
 }
 
+/* Interactive TEDx case study and draggable artwork. */
 .tedx-playground {
   width: 100vw;
   min-height: calc(100svh - 96px);
@@ -1948,14 +1958,14 @@
 .case-jump-menu {
   position: fixed;
   top: 210px;
-  right: calc(100vw - var(--nav-side-padding) - var(--monogram-width));
-  left: auto;
+  right: auto;
+  left: 32px;
   z-index: 20;
-  width: 140px;
+  width: 164px;
   display: grid;
   gap: 18px;
   align-self: start;
-  text-align: right;
+  text-align: left;
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
@@ -1973,7 +1983,7 @@
   display: block;
   padding: 0;
   color: var(--muted);
-  font-size: 15px;
+  font-size: 17px;
   line-height: 1.35;
   transition: color 180ms ease;
 }
@@ -2193,7 +2203,7 @@
   margin: 0 0 30px;
   color: var(--case-ink);
   font-family: var(--display);
-  font-size: clamp(31px, 3.6vw, 48px);
+  font-size: clamp(28px, 3.6vw, 36px);
   font-weight: 400;
   line-height: 1.05;
   letter-spacing: -.055em;
@@ -2214,10 +2224,10 @@
 
 .case-section-followup h3 {
   max-width: 880px;
-  margin: 0 0 clamp(24px, 3vw, 38px);
+  margin: 0 0 clamp(24px, 3vw, 36px);
   color: var(--case-ink);
   font-family: var(--display);
-  font-size: clamp(30px, 4vw, 50px);
+  font-size: clamp(28px, 4vw, 36px);
   font-weight: 400;
   line-height: 1.08;
   letter-spacing: -.05em;
@@ -4543,6 +4553,7 @@ footer { padding: clamp(130px, 17vw, 220px) 0 36px; }
   .case-section.is-reversed > .graphic-advisr-outcome { padding-left: 48px; }
 }
 
+/* Main tablet/mobile layout overrides; check these when changing desktop spacing. */
 @media (max-width: 800px) {
   .site-shell { width: min(100% - 32px, 1180px); }
   .site-header { height: 78px; padding-inline: 20px; }
@@ -4748,4 +4759,64 @@ footer { padding: clamp(130px, 17vw, 220px) 0 36px; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+}
+
+/* Full-width AdvisrLab decision pathway. */
+.theme-advisr .section-advisr-system { display: block; }
+.theme-advisr .section-advisr-system .case-section-copy { width: 100%; max-width: none; }
+.theme-advisr .section-advisr-system .graphic-advisr-system { width: 100%; max-width: none; margin: 32px 0; padding: 0; }
+.theme-advisr .section-advisr-system .case-graphic-stage { min-height: 0; padding: 0; display: block; }
+.advisr-pathway { width: min(100%, 860px); margin: 0 auto; color: #48258a; font-size: 16px; line-height: 1.4; }
+.advisr-pathway-start { display: grid; grid-template-columns: 1fr; align-items: center; gap: 14px; width: min(100%, 480px); margin-inline: auto; }
+.advisr-pathway-start > span { transform: rotate(90deg); }
+.advisr-pathway-start > div { display: grid; place-items: center; min-height: 88px; padding: 24px; border: 1px solid #48258a; border-radius: 3px; background: white; text-align: center; }
+.advisr-pathway-start > span, .advisr-pathway-arrow { text-align: center; font-size: 22px; }
+.advisr-pathway-arrow { padding: 20px; }
+.advisr-confidence-gate { text-align: center; padding: 0 0 28px; }
+.advisr-confidence-gate h3 { margin: 0; color: #48258a; font-size: 18px; font-weight: 600; }
+.advisr-pathway-outputs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; position: relative; padding-top: 28px; }
+.advisr-pathway-outputs::before { content: ''; position: absolute; top: 0; left: calc((100% - 48px) / 6); right: calc((100% - 48px) / 6); height: 1px; background: #48258a; }
+.advisr-pathway-outputs > div { display: flex; flex-direction: column; text-align: center; position: relative; }
+.advisr-pathway-outputs > div::before { content: ''; position: absolute; top: -28px; left: 50%; height: 28px; width: 1px; background: #48258a; }
+.advisr-pathway-outputs b { display: grid; place-items: center; min-height: 80px; padding: 22px; border: 2px solid #48258a; border-radius: 3px; background: white; font-size: 17px; }
+.advisr-pathway-outputs > div > span { padding: 18px; font-size: 22px; }
+.advisr-pathway-outputs article { display: grid; place-content: center; flex: 1; min-height: 120px; padding: 24px; border: 1px solid #48258a; border-radius: 3px; background: white; }
+@media (max-width: 620px) {
+  .advisr-pathway-outputs b { padding-inline: 8px; }
+  .advisr-pathway-outputs { gap: 8px; }
+  .advisr-pathway-outputs article { padding: 10px 6px; }
+  .advisr-pathway-outputs::before { left: calc((100% - 16px) / 6); right: calc((100% - 16px) / 6); }
+}
+
+.advisr-portal { margin: 36px 0 0; }
+.advisr-portal > p { margin: 0 0 24px; color: #3f3e39; font-size: 16px; line-height: 1.72; }
+.advisr-portal-screen { position: relative; width: 80%; margin-inline: auto; }
+.advisr-portal-screen img { display: block; width: 100%; height: auto; }
+.advisr-portal-screen button { position: absolute; padding: 0; border: 0; border-radius: 0; background: transparent; cursor: pointer; }
+.advisr-portal-screen button:focus-visible { outline: 3px solid #48258a; outline-offset: 4px; }
+.advisr-portal-launch { left: 15.3439%; top: 41.2407%; width: 12.4225%; height: 4.2553%; }
+.advisr-portal-close { left: 64.2857%; top: 27.1277%; width: 2.6455%; height: 3.5461%; }
+.advisr-portal-cancel { left: 48.0208%; top: 55.3012%; width: 5.0926%; height: 3.1915%; }
+
+.theme-advisr .section-advisr-outcome { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+.theme-advisr .section-advisr-outcome .case-section-copy { order: 0; width: 100%; max-width: none; }
+.theme-advisr .section-advisr-outcome .graphic-advisr-outcome { order: 1; width: 100%; max-width: none; padding: 0; margin: 0; }
+.section-advisr-outcome .graphic-advisr-outcome .case-graphic-stage { min-height: 0; }
+.section-advisr-outcome .graphic-advisr-outcome .advisr-outcome-ui { position: relative; inset: auto; gap: 0; }
+.section-advisr-outcome .advisr-outcome-header { margin-bottom: 24px; }
+.section-advisr-outcome .advisr-outcome-header p { font-size: 26px; }
+.section-advisr-outcome .advisr-outcome-header small { font-size: 16px; }
+.section-advisr-outcome .advisr-outcome-checks { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.section-advisr-outcome .advisr-outcome-checks button { display: block; padding: 18px 12px; border: 1px solid #48258a; border-bottom: 0; border-radius: 8px 8px 0 0; background: white; color: #48258a; text-align: center; transform: none; }
+.section-advisr-outcome .advisr-outcome-checks span { font-size: 16px; font-weight: 600; }
+.section-advisr-outcome .advisr-outcome-checks button:hover { text-decoration: underline; text-underline-offset: 4px; }
+.section-advisr-outcome .advisr-outcome-checks button.active { background: #48258a; color: white; }
+.section-advisr-outcome .advisr-outcome-checks button:focus-visible { outline: 3px solid #48258a; outline-offset: 3px; }
+.section-advisr-outcome .advisr-outcome-ui > .advisr-outcome-detail { min-height: 100px; padding: 28px; border: 1px solid #48258a; background: white; font-size: 18px; line-height: 1.6; }
+.section-advisr-outcome .advisr-outcome-limit { margin-top: 24px; }
+.section-advisr-outcome .advisr-outcome-limit b, .section-advisr-outcome .advisr-outcome-limit span { font-size: 16px; }
+@media (max-width: 620px) {
+  .section-advisr-outcome .advisr-outcome-checks { display: flex; overflow-x: auto; padding-top: 4px; }
+  .section-advisr-outcome .advisr-outcome-checks button { flex: 0 0 auto; }
+  .section-advisr-outcome .advisr-outcome-header { flex-wrap: wrap; }
 }

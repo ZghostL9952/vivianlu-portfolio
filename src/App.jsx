@@ -1,12 +1,19 @@
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { Analytics } from '@vercel/analytics/react'
 import './App.css'
 import { caseStudies, caseStudyOrder } from './caseStudies'
 import LiquidGlassContainer from './vendor/liquid-glass-container'
 import SpexVisual from './SpexVisual'
 
+// Navigation map: project cards and content lists are near the top; Visual/About
+// pages follow; project-specific graphics sit before CaseStudy; App at the end
+// owns routing, the loading intro, homepage copy, header links, and footer.
+// Full case-study text lives in caseStudies.js; shared styling lives in App.css.
+
+// Add a slug here to show its card as under construction and block its detail route.
 const blockedCaseStudySlugs = new Set()
 
+// Keep these phase timings aligned with the .loader-* animations in App.css.
 const LOADER_JUMP_DURATION_MS = 850
 const LOADER_JUMP_LOOPS = 2
 const LOADER_JUMP_STAGGER_MS = 110
@@ -16,10 +23,13 @@ const LOADER_SETTLE_MS = LOADER_FLY_START_MS - 60
 const LOADER_DONE_MS = LOADER_FLY_START_MS + 870
 const LOGO_EXPRESSIONS = ['/frame-5.svg', '/frame-6.svg']
 
+// Homepage order and card labels. Each slug must match a caseStudies.js key.
+// To add a project, also update caseStudyOrder and supply its ProjectArtwork branch;
+// tone selects an App.css class. Files in public/ use root URLs such as /spex-card.svg.
 const projects = [
   { number: '01', slug: 'sportsexcitement', title: 'User Sign-up, SportsExcitement, intern', subtitle: 'Streamlining sign-up so new users can get started faster', tags: ['UX Design', 'Mobile', 'Web'], tone: 'peach', artwork: 'spex' },
-  { number: '02', slug: 'advisrlab', title: 'AI Advising, UW iSchool Sponsored Capstone, team lead', subtitle: 'Designing fast answers with visible limits', tags: ['UX Research','UX Design' ,'Prompt Engineer', 'Product Management'], tone: 'blue', artwork: 'advisrlab' },
-  { number: '03', slug: 'somacanvas', title: 'Somacanvas, continued class project, 0 → 1', subtitle: 'A visual workspace for shaping and connecting ideas', tags: ['Product Design', 'Web', 'Interaction Design'], tone: 'soma', artwork: 'somacanvas' },
+  { number: '02', slug: 'advisrlab', title: 'AI Advising, UW iSchool Sponsored Capstone, product lead', subtitle: 'Designing fast answers with visible limits', tags: ['UX Research','UX Design' ,'Prompt Engineer', 'Product Management'], tone: 'blue', artwork: 'advisrlab' },
+  { number: '03', slug: 'somacanvas', title: 'SomaCanvas, continued class project, 0 → 1', subtitle: 'Hand gestures become abstract art without precise cursor control', tags: ['Product Design', 'Web', 'Interaction Design'], tone: 'soma', artwork: 'somacanvas' },
   { number: '04', slug: 'costco', title: 'Costco Website Redesign, class project', subtitle: 'Making online shopping clearer and easier to navigate', tags: ['UX Design', 'Prototype', 'Information Architecture'], tone: 'costco', artwork: 'costco' },
 ]
 
@@ -144,6 +154,7 @@ function ProjectCard({ project }) {
   )
 }
 
+// For a new top-level page, also update pageDetails and the page switch in App.
 const primaryNavigation = [
   { id: 'work', label: 'Work', href: '/' },
   { id: 'visual', label: 'Visual', href: '/visual' },
@@ -168,11 +179,12 @@ const pageDetails = {
   },
 }
 
+// Visual archive cards: href opens an external project; otherwise /visual/:slug renders VisualCase.
 const visualProjects = [
   {
     slug: 'tedx-uofw',
     title: 'TEDxUofW',
-    role: 'Design Director',
+    role: 'Director of Design',
     thumbnail: '/tedx-uofw-thumbnail.png',
     image: '/tedx-uofw.svg',
     alt: 'TEDxUofW visual design artwork',
@@ -202,6 +214,7 @@ const artGallery = [
 
 let topTedxLayer = 20
 
+// The second copy makes the scrolling rail seamless; hide that copy from keyboard and screen-reader navigation.
 function ArtGallerySet({ duplicate = false, onSelect }) {
   return (
     <div className="art-gallery-set" aria-hidden={duplicate || undefined}>
@@ -755,6 +768,7 @@ function PagePlaceholder({ page }) {
 }
 
 // Replace these placeholders with book titles and authors when the list is ready.
+// Edit the About page reading lists here; biography and photos are in AboutPage below.
 const aboutBooks = {
   current: [
     { title: 'UX Skills for Business Strategy', author: 'Torrey Podmajersky, 2 more' },
@@ -819,6 +833,7 @@ function AboutPage() {
   )
 }
 
+// SomaCanvas visuals: gesture previews, palette video, and evaluation charts.
 const somaGestures = [
   { id: 'fist', gesture: '✊', hand: 'Closed Fist', output: 'Rest · no mark' },
   { id: 'palm', gesture: '🖐️', hand: 'Open Palm', output: 'Grow a magnetic circle' },
@@ -1296,6 +1311,7 @@ function SomaEvaluationChart() {
   )
 }
 
+// Costco visuals: category vocabulary, before/after comparisons, prototype, and impact charts.
 const costcoVocabularyBefore = [
   { label: 'TVs', target: 'tv' },
   { label: 'iPad & Tablets', target: 'tablets' },
@@ -1736,6 +1752,7 @@ function CostcoImpactChart() {
   )
 }
 
+// Maps caseStudies.js section.visual names to graphics. SPEX visuals use SpexVisual instead.
 function CaseGraphic({ kind, label, hero = false }) {
   const trustItems = [
     { label: 'Official citations', value: 57, detail: 'Students most trusted answers they could verify against an official iSchool source.' },
@@ -1744,16 +1761,9 @@ function CaseGraphic({ kind, label, hero = false }) {
   ]
   const [activeTrustIndex, setActiveTrustIndex] = useState(0)
   const activeTrustItem = trustItems[activeTrustIndex]
-  const systemRoutes = [
-    { label: 'Answer', condition: 'Supported + low-risk', detail: 'Respond directly with the official source and a visible confidence level.' },
-    { label: 'Clarify', condition: 'One detail is missing', detail: 'Ask one focused question when the missing detail would change the answer.' },
-    { label: 'Escalate', condition: 'High-stakes or personal', detail: 'Stop answering and give the single best route to a human advisor.' },
-  ]
-  const [activeSystemIndex, setActiveSystemIndex] = useState(0)
-  const activeSystemRoute = systemRoutes[activeSystemIndex]
   const handoffItems = [
     { label: 'Knowledge base', detail: 'Structured source files made official advising content easier to retrieve and maintain.' },
-    { label: 'Response system', detail: 'A consistent answer format surfaced sources, confidence, and the next step.' },
+    { label: 'Response system', detail: 'Three internal confidence levels assessed source support and informed whether to answer, clarify, or escalate.' },
     { label: 'Escalation rules', detail: 'High-stakes and record-specific questions were routed back to human advising.' },
     { label: 'Maintenance guide', detail: 'The handoff documented ownership, updates, known limits, and future work.' },
   ]
@@ -1776,7 +1786,7 @@ function CaseGraphic({ kind, label, hero = false }) {
         )}
         {isAdvisr && kind === 'advisr-trust' && (
           <div className="advisr-trust-ui">
-            <div className="advisr-trust-header"><p>What creates trust?</p><small>N=14</small></div>
+            <div className="advisr-trust-header"><p>What creates trust?</p><small>N=20</small></div>
             <div className="advisr-trust-chart" role="group" aria-label="Student trust survey results">
               {trustItems.map((item, index) => (
                 <button
@@ -1800,52 +1810,52 @@ function CaseGraphic({ kind, label, hero = false }) {
           </div>
         )}
         {isAdvisr && kind === 'advisr-system' && (
-          <div className="advisr-system-ui">
-            <div className="advisr-system-foundation">
-              <div><span>01</span><small>Ground every answer</small><b>Official iSchool sources</b></div>
-              <i aria-hidden="true">→</i>
-              <div><span>02</span><small>Check the risk</small><b>Is the answer fully supported?</b></div>
+          <div className="advisr-pathway" aria-label="User input, knowledge base check, internal confidence rating, and response">
+            <div className="advisr-pathway-start">
+              <div>User input</div>
+              <span aria-hidden="true">→</span>
+              <div>Check iSchool knowledge base</div>
             </div>
-            <div className="advisr-system-branch" aria-hidden="true"><i /><span /></div>
-            <div className="advisr-system-paths" role="group" aria-label="AdvisrLab response routes">
-              {systemRoutes.map((route, index) => (
-                <button
-                  className={activeSystemIndex === index ? 'active' : ''}
-                  type="button"
-                  aria-pressed={activeSystemIndex === index}
-                  onClick={() => setActiveSystemIndex(index)}
-                  onFocus={() => setActiveSystemIndex(index)}
-                  onMouseEnter={() => setActiveSystemIndex(index)}
-                  key={route.label}
-                >
-                  <span>{String(index + 1).padStart(2, '0')}</span>
-                  <b>{route.label}</b>
-                  <small>{route.condition}</small>
-                </button>
-              ))}
+            <div className="advisr-pathway-arrow" aria-hidden="true">↓</div>
+            <div className="advisr-confidence-gate">
+              <h3>Internal confidence rating</h3>
             </div>
-            <p className="advisr-system-detail" aria-live="polite"><b>{activeSystemRoute.label}</b><span>{activeSystemRoute.detail}</span></p>
+            <div className="advisr-pathway-outputs">
+              <div><b>Low</b><span aria-hidden="true">↓</span><article>Stop answering.<br />Refer to a human advisor.</article></div>
+              <div><b>Medium</b><span aria-hidden="true">↓</span><article>Ask clarifying questions.</article></div>
+              <div><b>High</b><span aria-hidden="true">↓</span><article>Answer clearly with cited sources.</article></div>
+            </div>
           </div>
         )}
         {isAdvisr && kind === 'advisr-outcome' && (
           <div className="advisr-outcome-ui">
-            <div className="advisr-outcome-header"><p>MVP handoff</p><small>4 deliverables</small></div>
-            <div className="advisr-outcome-checks" role="group" aria-label="MVP handoff deliverables">
+            <div className="advisr-outcome-header"><p>Live pilot handoff</p><small>4 deliverables</small></div>
+            <div className="advisr-outcome-checks" role="tablist" aria-label="Live pilot handoff deliverables">
               {handoffItems.map((item, index) => (
                 <button
                   className={activeHandoffIndex === index ? 'active' : ''}
-                  type="button"
-                  aria-pressed={activeHandoffIndex === index}
+                  type="button" role="tab"
+                  id={`handoff-tab-${index}`}
+                  aria-selected={activeHandoffIndex === index}
+                  aria-controls="handoff-panel"
+                  tabIndex={activeHandoffIndex === index ? 0 : -1}
                   onClick={() => setActiveHandoffIndex(index)}
-                  onFocus={() => setActiveHandoffIndex(index)}
-                  onMouseEnter={() => setActiveHandoffIndex(index)}
+                  onKeyDown={(event) => {
+                    const next = event.key === 'ArrowRight' ? (index + 1) % handoffItems.length
+                      : event.key === 'ArrowLeft' ? (index - 1 + handoffItems.length) % handoffItems.length
+                      : event.key === 'Home' ? 0 : event.key === 'End' ? handoffItems.length - 1 : null
+                    if (next === null) return
+                    event.preventDefault()
+                    setActiveHandoffIndex(next)
+                    event.currentTarget.parentElement.children[next].focus()
+                  }}
                   key={item.label}
                 >
-                  <i>✓</i><span>{item.label}</span>
+                  <span>{item.label}</span>
                 </button>
               ))}
             </div>
-            <p className="advisr-outcome-detail" aria-live="polite">{activeHandoffItem.detail}</p>
+            <div className="advisr-outcome-detail" id="handoff-panel" role="tabpanel" aria-labelledby={`handoff-tab-${activeHandoffIndex}`} tabIndex={0}>{activeHandoffItem.detail}</div>
             <div className="advisr-outcome-limit"><b>Designed boundary</b><span>No records, live registration data, or final graduation decisions.</span></div>
           </div>
         )}
@@ -1932,13 +1942,56 @@ function SurveyChart({ chart }) {
   )
 }
 
+function AdvisrPortal() {
+  const [agreementOpen, setAgreementOpen] = useState(false)
+  const launchRef = useRef(null)
+  const closeRef = useRef(null)
+  useEffect(() => {
+    if (agreementOpen) closeRef.current?.focus({ preventScroll: true })
+  }, [agreementOpen])
+  const closeAgreement = () => {
+    setAgreementOpen(false)
+    requestAnimationFrame(() => launchRef.current?.focus({ preventScroll: true }))
+  }
+  return (
+    <section className="advisr-portal" aria-label="AdvisrLab portal page">
+      <p>Then I designed a dedicated portal page for accessing AdvisrLab, bringing together disclaimers, access steps, and guidance on how to get the most out of the bot.</p>
+      <div className="advisr-portal-screen" onKeyDown={(event) => { if (event.key === 'Escape' && agreementOpen) closeAgreement() }}>
+        <img src={agreementOpen ? '/advisrlab-agreement.svg' : '/advisrlab-portal.svg'} width="1512" height="1128" alt={agreementOpen ? 'Acknowledgment of AI limitations: AdvisrBot can make mistakes. Consult an official iSchool advisor for binding degree decisions.' : 'AdvisrLab portal with Launch AdvisrBot, steps to request UW Purple access, and guidance on courses, degree planning, and questions.'} />
+        {!agreementOpen ? <button ref={launchRef} className="advisr-portal-launch" type="button" aria-label="Launch AdvisrBot" onClick={() => setAgreementOpen(true)} /> : <>
+          <button ref={closeRef} className="advisr-portal-close" type="button" aria-label="Close agreement" onClick={closeAgreement} />
+          <button className="advisr-portal-cancel" type="button" aria-label="Cancel" onClick={closeAgreement} />
+        </>}
+      </div>
+    </section>
+  )
+}
+
+function ResearchPriorities({ priorities }) {
+  return (
+    <div className="spex-challenge spex-research-priorities" aria-label="Priorities from competitive research">
+      <h3 className="spex-priorities-title">3 priorities</h3>
+      <ol>{priorities.map((priority, index) => (
+        <li key={priority}><span aria-hidden="true">{String(index + 1).padStart(2, '0')}</span><h4>{priority}</h4></li>
+      ))}</ol>
+    </div>
+  )
+}
+
+// Shared story layout: paragraphs/bullets/callouts come from caseStudies.js; visual selects the illustration.
 function CaseStudySection({ section, index, sectionId, groupNumber, subsection = false }) {
   const Heading = subsection ? 'h3' : 'h2'
   const isOpeningSection = index === 0
   const hasGraphic = !isOpeningSection && !section.hideVisual
   const sectionDetails = (
     <>
-      {section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+      {section.paragraphs.map((paragraph, paragraphIndex) => (
+        <Fragment key={paragraph}>
+          <p>{paragraph}</p>
+          {paragraphIndex === 0 && section.portal && <AdvisrPortal />}
+          {paragraphIndex === 0 && section.priorities && <ResearchPriorities priorities={section.priorities} />}
+        </Fragment>
+      ))}
       {section.stats && (
         <div className="case-stats">
           {section.stats.map(([value, description]) => <div key={description}><strong>{value}</strong><span>{description}</span></div>)}
@@ -1952,8 +2005,9 @@ function CaseStudySection({ section, index, sectionId, groupNumber, subsection =
   return (
     <section className={`case-section section-${section.visual}${index % 2 ? ' is-reversed' : ''}${isOpeningSection ? ' is-centered-intro' : ''}${!hasGraphic && !isOpeningSection ? ' has-no-graphic' : ''}${section.fullWidth ? ' is-full-width' : ''}${subsection ? ' is-subsection' : ''}`} id={sectionId}>
       <div className="case-section-copy">
-        {!section.ageGroup && <p className="case-eyebrow">{!subsection && `${String(groupNumber ?? index + 1).padStart(2, '0')} · `}{section.eyebrow}</p>}
+        {!section.ageGroup && section.eyebrow && <p className="case-eyebrow">{!subsection && `${String(groupNumber ?? index + 1).padStart(2, '0')} · `}{section.eyebrow}</p>}
         <Heading>{section.title}</Heading>
+        {section.graphicBeforeText && <CaseGraphic kind={section.visual} label="How AdvisrLab routes a question" />}
         {isOpeningSection ? (
           <div className={`case-overview-layout${section.overviewChart ? ' has-chart' : ''}`}>
             <div className="case-overview-copy">
@@ -1964,7 +2018,7 @@ function CaseStudySection({ section, index, sectionId, groupNumber, subsection =
           </div>
         ) : sectionDetails}
       </div>
-      {hasGraphic && (section.visual.startsWith('spex-')
+      {hasGraphic && !section.graphicBeforeText && (section.visual.startsWith('spex-')
         ? <SpexVisual kind={section.visual} ageGroup={section.ageGroup} />
         : <CaseGraphic kind={section.visual} label={section.title} />)}
       {section.followup && (
@@ -2040,6 +2094,7 @@ function CaseStudy({ project }) {
     .filter((slug) => slug !== project.slug && !blockedCaseStudySlugs.has(slug))
     .map((slug) => caseStudies[slug])
   const cardProject = projects.find((item) => item.slug === project.slug)
+  // Group indices refer to project.sections positions; keep the Costco custom groups in sync when reordering sections.
   const jumpMenuItems = project.sectionGroups
     ? project.sectionGroups.map((group) => ({ label: group.label, sectionIndex: group.indices[0], activeSections: group.indices, anchor: `${project.slug}-${group.id}` }))
     : project.slug === 'costco'
@@ -2202,6 +2257,8 @@ function App() {
     timeZone: 'America/Los_Angeles',
   }).format(new Date())
 
+  // Lightweight pathname routing, with browser back/forward handled by popstate below.
+  // New routes also need a render branch below; vercel.json serves the app for deep links.
   const getCurrentPage = () => {
     const route = window.location.pathname.split('/').filter(Boolean)[0]
     return pageDetails[route] ? route : 'work'
@@ -2222,6 +2279,7 @@ function App() {
   const [activeProjectSlug, setActiveProjectSlug] = useState(getCurrentProject)
   const [activeVisualProject, setActiveVisualProject] = useState(getCurrentVisual)
   const [seattleTime, setSeattleTime] = useState(getSeattleTime)
+  // Add ?loader to the URL to replay the intro; reduced-motion preferences still skip it.
   const [loaderPhase, setLoaderPhase] = useState(() => {
     const forcePreview = new URLSearchParams(window.location.search).has('loader')
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return 'done'

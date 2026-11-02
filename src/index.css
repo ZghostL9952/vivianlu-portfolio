@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Manrope:wght@400;500;600&display=swap');
 
+/* Global colors and fonts: edit these shared tokens before changing individual components. */
 :root {
   --paper: #f7f6f2;
   --ink: #171714;

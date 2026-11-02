@@ -5,6 +5,7 @@ import './SpexWalkthrough.css'
 const assetUrl = (name) => `/spex/${name}.svg`
 const seconds = (time) => `0:${String(Math.floor(time / 1000)).padStart(2, '0')}`
 
+// SVG overlays mask the exported static fields and animate sample text in the same 390 × 844 coordinate space.
 function Field({ x, y, width, maskWidth = width, value, placeholder = '', active = false, center = false, size = 14 }) {
   return (
     <g>
@@ -95,6 +96,7 @@ export default function SpexWalkthrough({ ageGroup = '18+' }) {
   const frame = frameAt(elapsed, flow)
   const { stage, local, complete } = frame
   const cursor = cursorAt(stage, local)
+// Pause off-screen or in a hidden tab, and wait for all SVG layers before starting playback.
   const running = playing && ready && inView && visible && !complete
 
   useEffect(() => {

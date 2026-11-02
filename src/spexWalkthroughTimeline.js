@@ -1,4 +1,8 @@
 // Coordinates use the original 390 × 844 Figma exports.
+// Edit screen order and pacing here. duration and click times are milliseconds;
+// clicks are [time within this stage, x, y], and asset is a filename in public/spex without .svg.
+// chapter is a zero-based navigation index. ScreenOverlays in SpexWalkthrough.jsx
+// has matching typing/selection timings, so adjust both when changing the choreography.
 const adultStages = [
   { id: 'splash', chapter: 0, asset: 'SplashScreen', duration: 2800, title: 'Welcome to SPEX', description: 'SPEX appears, then a tap on Sign Up starts the journey.', clicks: [[2200, 195, 702]] },
   { id: 'birthday', chapter: 1, asset: 'Birthday', duration: 5000, title: 'Start with age', description: 'Enter a birthday to follow the adult sign-up path.', clicks: [[600, 69, 277], [1800, 186, 277], [2900, 303, 277], [4400, 195, 482]] },
